@@ -13,13 +13,13 @@ public class Name {
 		this.middleName = middleName;
 	}
 
-	private boolean canBuild(String firstName, String middleName, String lastName) {
+	private static boolean canBuild(String firstName, String middleName, String lastName) {
 		return firstName != "" ||
 			   middleName != "" ||
 			   lastName != "";
 	}
 
-	public Name NameBuilder(@NotNull String firstName, @NotNull String middleName, @NotNull String lastName) { // have to get the not null annotation from somewhere
+	public static Name NameBuilder(@NotNull String firstName, @NotNull String middleName, @NotNull String lastName) { // have to get the not null annotation from somewhere
 		if(canBuild(firstName, middleName, lastName)) {
 			return new Name(firstName,middleName,lastName);
 		}

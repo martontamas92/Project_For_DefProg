@@ -22,11 +22,10 @@ public class Neptun_Code {
 		 Pattern p = Pattern.compile("[^A-Za-z0-9]");
 	     Matcher m = p.matcher(neptun);
 	     boolean b = m.find();
-
-		return neptun != "" || neptun.length() > 8 || b ;
+		 return neptun != "" || neptun.length() > 8 || b ;
 	}
 
-	public Neptun_Code bulidNeptun_Code(@NotNull String neptun) {
+	public static Neptun_Code buildNeptun_Code(@NotNull String neptun) {
 		return new Neptun_Code(neptun);
 	}
 

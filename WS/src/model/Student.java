@@ -1,17 +1,27 @@
 package model;
 
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.jetbrains.annotations.NotNull;
 
 import business_model.Name;
 import business_model.Neptun_Code;
 @Entity
-public class Student extends User{
+@Table(name="Student")
+public class Student extends User implements Serializable{
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id;
@@ -30,7 +40,7 @@ public class Student extends User{
 
 	}
 
-	public Student studentBuilder(@NotNull Name name,@NotNull Neptun_Code neptun,@NotNull String uname,@NotNull String p) {
+	public static Student studentBuilder(@NotNull Name name,@NotNull Neptun_Code neptun,@NotNull String uname,@NotNull String p) {
 		return new Student(name,neptun);
 	}
 
@@ -38,18 +48,6 @@ public class Student extends User{
 		return new Student(name,neptun);
 	}
 
-	/*@Override
-	public String getUname() {
-		// TODO Auto-generated method stub
-		return this.uname;
-	}
-
-	@Override
-	public void setUname(String uname) {
-		// TODO Auto-generated method stub
-		this.uname = uname;
-	}
-	*/
 
 	@Override
 	public Name getName() {
@@ -62,19 +60,7 @@ public class Student extends User{
 		// TODO Auto-generated method stub
 		this.name = name;
 	}
-	/*
-	@Override
-	public String getP() {
-		// TODO Auto-generated method stub
-		return this.p;
-	}
 
-	@Override
-	public void setP(String p) {
-		// TODO Auto-generated method stub
-		this.p = p;
-	}
-	*/
 	public Neptun_Code getNeptun() {
 		return neptun;
 	}
@@ -91,8 +77,7 @@ public class Student extends User{
 	// maybe we will not need it
 	@Override
 	public String toString() {
-		return "Student [neptun=" + neptun + ", getName()=" + getName() + ", getClass()="
-				+ getClass() + ", toString()=" + super.toString() + "]";
+		return "Student [neptun=" + neptun + ", getName()=" + getName().toString() ;
 	}
 
 
