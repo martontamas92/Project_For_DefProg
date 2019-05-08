@@ -13,8 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import business_model.Name;
 import business_model.Neptun_Code;
-@Entity
-@Table(name="Student")
+
 public class Student extends User implements Serializable{
 	/**
 	 *
@@ -22,8 +21,6 @@ public class Student extends User implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id;
 
 

@@ -19,19 +19,20 @@ import business_model.Name;
 import business_model.Neptun_Code;
 import entity.interfaces.IStudent;
 import model.Student;
-
+import entity.controller.StudentController;
 
 
 @Path("/student")
-public class StudentController {
+public class StudentHandler {
 	@Autowired
-	private IStudent studentRepository;
+	private StudentController studentRepository = new StudentController();
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/registrate")
 
 	public Response proba(String data) {
 
+		//studentRepository.testConnection();
 
 		JSONObject json = new JSONObject(data);
 		String firstName = json.getJSONObject("Name").getString("firstName");
@@ -50,7 +51,7 @@ public class StudentController {
 
 		try {
 			Student st = Student.studentBuilder(name, nept);
-
+			studentRepository.addStudent(st);
 			return Response.status(201).entity(st.toString()).build();
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
