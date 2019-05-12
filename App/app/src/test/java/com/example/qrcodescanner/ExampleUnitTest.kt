@@ -1,4 +1,4 @@
-package com.example.register_presence_app
+package com.example.qrcodescanner
 
 import org.junit.Test
 
