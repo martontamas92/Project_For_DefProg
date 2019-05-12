@@ -1,0 +1,15 @@
+{
+	"Name": {
+		"firstName":"Teszt",
+		"middleName":"Elek",
+		"lastName":"Derek"
+	
+	},
+	"Neptun":{
+		"neptun": "ITXDJ8"	
+	},
+	"Auth":{
+		"uname":"login",
+		"passwd":"passwd"
+	}
+}	
