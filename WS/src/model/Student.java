@@ -15,20 +15,11 @@ import business_model.Name;
 import business_model.Neptun_Code;
 
 public class Student extends User implements Serializable{
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
-
-	private Integer id;
-
 
 	private Neptun_Code neptun;
 
 	private Name name;
-	//private String uname;
-	//private String p;
+
 
 	private Student(@NotNull Name name,@NotNull Neptun_Code neptun) {
 		super();
@@ -37,9 +28,6 @@ public class Student extends User implements Serializable{
 
 	}
 
-	public static Student studentBuilder(@NotNull Name name,@NotNull Neptun_Code neptun,@NotNull String uname,@NotNull String p) {
-		return new Student(name,neptun);
-	}
 
 	public static Student studentBuilder(@NotNull Name name,@NotNull Neptun_Code neptun) {
 		return new Student(name,neptun);
@@ -67,9 +55,34 @@ public class Student extends User implements Serializable{
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Student other = (Student) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (neptun == null) {
+			if (other.neptun != null)
+				return false;
+		} else if (!neptun.equals(other.neptun))
+			return false;
+		return true;
+	}
+
+	@Override
 	public int hashCode() {
-		// TODO Auto-generated method stub
-		return super.hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((neptun == null) ? 0 : neptun.hashCode());
+		return result;
 	}
 	// maybe we will not need it
 	@Override

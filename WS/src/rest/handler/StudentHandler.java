@@ -2,6 +2,8 @@ package rest.handler;
 
 
 
+import java.util.ArrayList;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -9,23 +11,22 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
-//import org.springframework.web.bind.annotation.RequestParam;
-
 import business_model.Name;
 import business_model.Neptun_Code;
-import entity.interfaces.IStudent;
+import business_model.Password;
+import business_model.UserName;
+import model.Auth;
 import model.Student;
+import entity.controller.AuthController;
 import entity.controller.StudentController;
 
 
 @Path("/student")
 public class StudentHandler {
-	@Autowired
+
 	private StudentController studentRepository = new StudentController();
+	private AuthController authRepository = new AuthController();
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/registrate")
@@ -39,6 +40,8 @@ public class StudentHandler {
 		String middleName = json.getJSONObject("Name").getString("middleName");
 		String lastName = json.getJSONObject("Name").getString("lastName");
 		String neptun = json.getJSONObject("Neptun").getString("neptun");
+		String passwd = json.getJSONObject("Auth").getString("passwd");
+		String uname = json.getJSONObject("Auth").getString("uname");
 
 		/*
 		System.out.println("fn: " + firstName);
@@ -48,11 +51,31 @@ public class StudentHandler {
 		*/
 		Name name = Name.NameBuilder(firstName, middleName, lastName);
 		Neptun_Code nept = Neptun_Code.buildNeptun_Code(neptun);
-
+		UserName userName = UserName.userNameBuilder(uname);
+		Password password = Password.passwordBuilder(passwd);
 		try {
+			ArrayList<Student> students = studentRepository.allStudent();
 			Student st = Student.studentBuilder(name, nept);
-			studentRepository.addStudent(st);
-			return Response.status(201).entity(st.toString()).build();
+
+			//System.out.println(students.contains(st));
+			if(students.contains(st)) {
+				return Response.status(204).entity("Student Already exists!").build();
+			}else {
+				if(authRepository.userNameExists(uname)) {
+					int a = studentRepository.addStudent(st);
+					Auth auth = new Auth(a, userName, password);
+					if(authRepository.add(auth)) {
+						return Response.status(201).entity(st.toString()).build();
+					}else {
+						return Response.status(500).entity("Registration failed").build();
+					}
+				}else {
+					return Response.status(204).entity("Username Already exists!").build();
+				}
+
+
+			}
+
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
 			return Response.status(500).entity(e.getMessage()).build();
@@ -81,5 +104,12 @@ public class StudentHandler {
         return st;
 
     }
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/list")
+	public ArrayList<Student> getAllStudents() {
+		return studentRepository.allStudent();
+	}
 
 }

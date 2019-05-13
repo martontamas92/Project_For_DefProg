@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 
+import business_model.Name;
+import business_model.Neptun_Code;
 import entity.interfaces.DBconnection;
 import entity.interfaces.IStudent;
 import model.Student;
@@ -24,7 +27,7 @@ public class StudentController implements IStudent {
 	}
 
 	@Override
-	public void addStudent(Student s) {
+	public int addStudent(Student s) {
 		ResultSet rs = null;
         int candidateId = 0;
 
@@ -51,7 +54,7 @@ public class StudentController implements IStudent {
 			System.out.println(e.getMessage());
 		}
 
-
+		return candidateId;
 
 	}
 
@@ -62,9 +65,27 @@ public class StudentController implements IStudent {
 	}
 
 	@Override
-	public Student[] allStudent() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Student> allStudent() {
+		ArrayList<Student> students = new ArrayList<>();
+		try {
+			String sql = "Select * from student_st";
+			conn = DBconnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				Name name = Name.NameBuilder(rs.getString("st_fn"), rs.getString("st_mn"), rs.getString("st_ln"));
+				Neptun_Code neptun = Neptun_Code.buildNeptun_Code(rs.getString("st_neptun"));
+				Student s = Student.studentBuilder(name, neptun);
+				students.add(s);
+			}
+			return students;
+		}catch(Exception e ) {
+			System.out.println(e.getMessage());
+			return students;
+		}
+
+
+
 	}
 
 	@Override

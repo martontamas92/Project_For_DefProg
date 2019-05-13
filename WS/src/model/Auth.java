@@ -1,30 +1,51 @@
 package model;
 
+import org.jetbrains.annotations.NotNull;
+
 import business_model.Name;
+import business_model.Password;
+import business_model.UserName;
 
 public class Auth {
-	private Name name;
-	private String uname;
-	private String passwd;
+	private Integer id;
+	private UserName uname;
+	private Password passwd;
+	/*
+	 * The password must contain one capital letter one number and one special character
+	 *
+	 * */
 
-	protected Name getName() {
-		return name;
-	}
-	protected void setName(Name name) {
-		this.name = name;
-	}
-	protected String getUname() {
-		return uname;
-	}
-	protected void setUname(String uname) {
+
+
+	public Auth(@NotNull Integer id, @NotNull UserName uname, @NotNull Password passwd) {
+		super();
+		this.id = id;
 		this.uname = uname;
-	}
-	protected String getPasswd() {
-		return passwd;
-	}
-	protected void setPasswd(String passwd) {
 		this.passwd = passwd;
 	}
+
+
+	public Integer getId() {
+		return id;
+	}
+
+	public UserName getUname() {
+		return uname;
+	}
+	public void setUname(UserName uname) {
+		this.uname = uname;
+	}
+	public Password getPasswd() {
+		return passwd;
+	}
+	public void setPasswd(Password passwd) {
+		this.passwd = passwd;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+
 
 
 }
