@@ -9,7 +9,7 @@ import entity.interfaces.DBconnection;
 import entity.interfaces.IAuth;
 import model.Auth;
 
-public class AuthController implements IAuth {
+public class StudentAuthController implements IAuth {
 	private Connection conn;
 	@Override
 	public boolean add(Auth a) {
@@ -21,9 +21,7 @@ public class AuthController implements IAuth {
 			pstmt.setString(2, a.getUname().getUname());
 			pstmt.setString(3, a.getPasswd().getPasswd());
 			int rowAffected = pstmt.executeUpdate();
-			if(rowAffected != 1) {
-				return false;
-			}
+			if(rowAffected != 1) {return false;}
 			return true;
 
 		}catch (Exception e) {
@@ -44,9 +42,7 @@ public class AuthController implements IAuth {
 
 		pstmt.setString(1, username);
 		ResultSet rs  = pstmt.executeQuery();
-		if(!rs.next()) {
-			return true;
-		}
+		if(rs.next()) {return true;}
 		return false;
 		}catch (Exception e) {
 			System.out.println("uname exists: " + e.getMessage());
@@ -64,9 +60,7 @@ public class AuthController implements IAuth {
 				conn = DBconnection.getConnection();
 				PreparedStatement pstmt = conn.prepareStatement(sql);
 				ResultSet rs = pstmt.executeQuery();
-				if(rs.getString("a_pwd").equals(passwd)) {
-					return true;
-				}
+				if(rs.getString("a_pwd").equals(passwd)) {return true;				}
 				return false;
 			}
 			return false;

@@ -18,7 +18,7 @@ import business_model.Password;
 import business_model.UserName;
 import model.Auth;
 import model.Student;
-import entity.controller.AuthController;
+import entity.controller.StudentAuthController;
 import entity.controller.StudentController;
 
 
@@ -26,7 +26,7 @@ import entity.controller.StudentController;
 public class StudentHandler {
 
 	private StudentController studentRepository = new StudentController();
-	private AuthController authRepository = new AuthController();
+	private StudentAuthController authRepository = new StudentAuthController();
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/registrate")
@@ -58,23 +58,14 @@ public class StudentHandler {
 			Student st = Student.studentBuilder(name, nept);
 
 			//System.out.println(students.contains(st));
-			if(students.contains(st)) {
-				return Response.status(204).entity("Student Already exists!").build();
-			}else {
-				if(authRepository.userNameExists(uname)) {
-					int a = studentRepository.addStudent(st);
-					Auth auth = new Auth(a, userName, password);
-					if(authRepository.add(auth)) {
-						return Response.status(201).entity(st.toString()).build();
-					}else {
-						return Response.status(500).entity("Registration failed").build();
-					}
-				}else {
-					return Response.status(204).entity("Username Already exists!").build();
-				}
+			if(students.contains(st)) {return Response.status(204).entity("Student Already exists!").build();}
+			if(authRepository.userNameExists(uname)) {return Response.status(204).entity("Username Already exists!").build();}
+			int a = studentRepository.addStudent(st);
+			Auth auth = new Auth(a, userName, password);
+			if(!authRepository.add(auth)) {return Response.status(500).entity("Registration failed").build();}
+			return Response.status(201).entity(st.toString()).build();
 
 
-			}
 
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
