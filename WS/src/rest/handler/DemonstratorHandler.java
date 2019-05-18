@@ -26,31 +26,38 @@ public class DemonstratorHandler {
 	private DemonstratorController demRepository = new DemonstratorController();
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/registrate")
 	public Response registrate(String data) {
+		try {
+			System.out.println(data);
+			JSONObject json = new JSONObject(data);
+			 String firstName = json.getJSONObject("Name").getString("firstName");
+			 String middleName = json.getJSONObject("Name").getString("middleName");
+			 String lastName = json.getJSONObject("Name").getString("lastName");
 
-		 JSONObject json = new JSONObject(data);
-		 String firstName = json.getJSONObject("Name").getString("firstName");
-		 String middleName = json.getJSONObject("Name").getString("middleName");
-		 String lastName = json.getJSONObject("Name").getString("lastName");
+			 String passwd = json.getJSONObject("Auth").getString("passwd");
+			 String uname = json.getJSONObject("Auth").getString("uname");
 
-		 String passwd = json.getJSONObject("Auth").getString("passwd");
-		 String uname = json.getJSONObject("Auth").getString("uname");
+			 Name n = Name.NameBuilder(firstName, middleName, lastName);
+			 Demonstrator d = new Demonstrator(n);
+			 UserName userName = UserName.userNameBuilder(uname);
+			 Password password = Password.passwordBuilder(passwd);
+			 System.out.println(uname);
 
-		 Name n = Name.NameBuilder(firstName, middleName, lastName);
-		 Demonstrator d = new Demonstrator(n);
-		 UserName userName = UserName.userNameBuilder(uname);
-		 Password password = Password.passwordBuilder(passwd);
-		 System.out.println(uname);
+			 ArrayList<Demonstrator> ds = demRepository.allDemonstrator();
+			 if(ds.contains(d)) {return Response.status(204).entity("Demonstrator Already exists!").build();}
+			 if(authRepository.userNameExists(uname)) {return Response.status(204).entity("Username Already exists!").build();}
+			 int a = demRepository.addDemonstrator(d);
+			 Auth auth = new Auth(a, userName, password);
+			 if(!authRepository.add(auth)) {return Response.status(500).entity("Registration failed").build();}
+			 //String response = "response:" + d.toString();
+			 return Response.status(201).entity(d).build();
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+			return Response.status(500).entity(data + "\n" + e.getMessage()).build();
+		}
 
-		 ArrayList<Demonstrator> ds = demRepository.allDemonstrator();
-		 if(ds.contains(d)) {return Response.status(204).entity("Demonstrator Already exists!").build();}
-		 if(authRepository.userNameExists(uname)) {return Response.status(204).entity("Username Already exists!").build();}
-		 int a = demRepository.addDemonstrator(d);
-		 Auth auth = new Auth(a, userName, password);
-		 if(!authRepository.add(auth)) {return Response.status(500).entity("Registration failed").build();}
-
-		 return Response.status(201).entity(d.toString()).build();
 
 	}
 

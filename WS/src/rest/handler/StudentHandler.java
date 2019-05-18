@@ -30,30 +30,32 @@ public class StudentHandler {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/registrate")
-
 	public Response proba(String data) {
 
 		//studentRepository.testConnection();
 
-		JSONObject json = new JSONObject(data);
-		String firstName = json.getJSONObject("Name").getString("firstName");
-		String middleName = json.getJSONObject("Name").getString("middleName");
-		String lastName = json.getJSONObject("Name").getString("lastName");
-		String neptun = json.getJSONObject("Neptun").getString("neptun");
-		String passwd = json.getJSONObject("Auth").getString("passwd");
-		String uname = json.getJSONObject("Auth").getString("uname");
 
-		/*
-		System.out.println("fn: " + firstName);
-		System.out.println("mn: " + middleName);
-		System.out.println("ln: " + lastName);
-		System.out.println("nept: " + neptun);
-		*/
-		Name name = Name.NameBuilder(firstName, middleName, lastName);
-		Neptun_Code nept = Neptun_Code.buildNeptun_Code(neptun);
-		UserName userName = UserName.userNameBuilder(uname);
-		Password password = Password.passwordBuilder(passwd);
 		try {
+			System.out.println(data);
+			JSONObject json = new JSONObject(data);
+			String firstName = json.getJSONObject("Name").getString("firstName");
+			String middleName = json.getJSONObject("Name").getString("middleName");
+			String lastName = json.getJSONObject("Name").getString("lastName");
+			String neptun = json.getJSONObject("Neptun").getString("neptun");
+			String passwd = json.getJSONObject("Auth").getString("passwd");
+			String uname = json.getJSONObject("Auth").getString("uname");
+
+			/*
+			System.out.println("fn: " + firstName);
+			System.out.println("mn: " + middleName);
+			System.out.println("ln: " + lastName);
+			System.out.println("nept: " + neptun);
+			*/
+			Name name = Name.NameBuilder(firstName, middleName, lastName);
+			Neptun_Code nept = Neptun_Code.buildNeptun_Code(neptun);
+			UserName userName = UserName.userNameBuilder(uname);
+			Password password = Password.passwordBuilder(passwd);
+
 			ArrayList<Student> students = studentRepository.allStudent();
 			Student st = Student.studentBuilder(name, nept);
 
