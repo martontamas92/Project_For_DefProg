@@ -12,7 +12,7 @@ import entity.interfaces.DBconnection;
 import entity.interfaces.IStudent;
 import model.Student;
 
-public class StudentController implements IStudent {
+public class StudentController {
 
 	private Connection conn = null;
 
@@ -26,7 +26,7 @@ public class StudentController implements IStudent {
 		}
 	}
 
-	@Override
+
 	public int addStudent(Student s) {
 		ResultSet rs = null;
         int candidateId = 0;
@@ -58,13 +58,13 @@ public class StudentController implements IStudent {
 
 	}
 
-	@Override
+
 	public Student findStudent(Integer id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
+
 	public ArrayList<Student> allStudent() {
 		ArrayList<Student> students = new ArrayList<>();
 		try {
@@ -88,7 +88,7 @@ public class StudentController implements IStudent {
 
 	}
 
-	@Override
+
 	public void addStudents(Student[] ss) {
 		// TODO Auto-generated method stub
 

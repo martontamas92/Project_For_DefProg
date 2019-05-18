@@ -8,6 +8,7 @@ public class Demonstrator extends User{
 
 	private Name name;
 
+	public Demonstrator() {}
 	public Demonstrator(@NotNull Name name) {
 		super();
 		this.name = name;

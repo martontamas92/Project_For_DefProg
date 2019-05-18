@@ -3,6 +3,7 @@ package model;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,13 +14,19 @@ import org.jetbrains.annotations.NotNull;
 
 import business_model.Name;
 import business_model.Neptun_Code;
-
+@Entity
 public class Student extends User implements Serializable{
-
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Integer id;
+	@Column(name="st_neptun")
 	private Neptun_Code neptun;
-
+	@Column(name="st_name")
 	private Name name;
 
+	public Integer getId() {
+		return id;
+	}
 
 	private Student(@NotNull Name name,@NotNull Neptun_Code neptun) {
 		super();
@@ -27,7 +34,6 @@ public class Student extends User implements Serializable{
 		this.name = name;
 
 	}
-
 
 	public static Student studentBuilder(@NotNull Name name,@NotNull Neptun_Code neptun) {
 		return new Student(name,neptun);

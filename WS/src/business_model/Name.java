@@ -3,10 +3,13 @@ package business_model;
 import org.jetbrains.annotations.NotNull;
 
 public class Name {
+
 	private String firstName;
 	private String lastName;
 	private String middleName;
 
+
+	private Name (){}
 	private Name(String firstName, String middleName, String lastName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
