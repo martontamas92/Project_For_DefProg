@@ -2,7 +2,7 @@ package com.example.qrcodescanner
 
 import android.app.Application
 
-class MyApplication: Application()
+class MyApplication : Application()
 {
     companion object
     {

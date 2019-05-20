@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         button_connection.setOnClickListener {
-            val intent = Intent( this, Connection::class.java )
+            val intent = Intent( this, SubjectActivity::class.java )
 
             startActivity( intent )
         }
