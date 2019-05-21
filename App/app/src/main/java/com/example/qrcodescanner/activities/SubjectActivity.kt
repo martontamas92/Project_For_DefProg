@@ -1,13 +1,17 @@
-package com.example.qrcodescanner.Activities
+package com.example.qrcodescanner.activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
+import android.view.MenuItem
 import android.widget.LinearLayout
-import com.example.qrcodescanner.Adapters.SubjectAdapter
-import com.example.qrcodescanner.Models.Subject
+import com.example.qrcodescanner.adapters.SubjectAdapter
+import com.example.qrcodescanner.models.Subject
 import com.example.qrcodescanner.R
+import android.view.Menu
+
 
 class SubjectActivity : AppCompatActivity()
 {
@@ -17,11 +21,13 @@ class SubjectActivity : AppCompatActivity()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_subject)
+        super.onCreate( savedInstanceState )
+        setContentView( R.layout.activity_subject )
         loadInputsAndVariables()
 
         recyclerView.layoutManager = LinearLayoutManager( this, LinearLayout.VERTICAL, false )
+
+        loadToolbar()
     }
 
     private fun loadInputsAndVariables()
@@ -34,5 +40,12 @@ class SubjectActivity : AppCompatActivity()
 
         recyclerViewAdapter     = SubjectAdapter( subjectList )
         recyclerView.adapter    = recyclerViewAdapter
+    }
+
+    private fun loadToolbar()
+    {
+        val toolbar: Toolbar = findViewById( R.id.toolbar_subject )
+
+        setSupportActionBar( toolbar )
     }
 }

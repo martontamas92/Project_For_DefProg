@@ -1,10 +1,9 @@
-package com.example.qrcodescanner.Activities
+package com.example.qrcodescanner.activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.example.qrcodescanner.R
-import org.jetbrains.anko.custom.async
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import java.net.URL

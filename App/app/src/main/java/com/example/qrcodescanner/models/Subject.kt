@@ -1,4 +1,4 @@
-package com.example.qrcodescanner.Models
+package com.example.qrcodescanner.models
 
 class Subject( id: Int, name: String, teacher: String )
 {

@@ -1,11 +1,11 @@
-package com.example.qrcodescanner.Adapters
+package com.example.qrcodescanner.adapters
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.example.qrcodescanner.Models.Subject
+import com.example.qrcodescanner.models.Subject
 import com.example.qrcodescanner.R
-import com.example.qrcodescanner.ViewHolders.SubjectViewHolder
+import com.example.qrcodescanner.viewholders.SubjectViewHolder
 
 class SubjectAdapter( private val subjectList: ArrayList<Subject>  ) : RecyclerView.Adapter<SubjectViewHolder>()
 {

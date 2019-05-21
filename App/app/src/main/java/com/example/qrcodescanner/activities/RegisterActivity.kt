@@ -1,4 +1,4 @@
-package com.example.qrcodescanner.Activities
+package com.example.qrcodescanner.activities
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
