@@ -9,7 +9,6 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import com.example.qrcodescanner.R
@@ -80,6 +79,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             {
                 startSubjectActivity()
             }
+            R.id.register ->
+            {
+                startRegisterActivity()
+            }
+            R.id.login ->
+            {
+                startLoginActivity()
+            }
         }
 
         drawer.closeDrawer( GravityCompat.START )
@@ -109,7 +116,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun startSubjectActivity()
     {
-        val intent = Intent( this, SubjectActivity::class.java )
+        val intent = Intent( this, AddSubjectActivity::class.java )
+
+        startActivity( intent )
+    }
+
+    private fun startLoginActivity()
+    {
+        val intent = Intent( this, LoginActivity::class.java )
+
+        startActivity( intent )
+    }
+
+    private fun startRegisterActivity()
+    {
+        val intent = Intent( this, RegisterActivity::class.java )
 
         startActivity( intent )
     }

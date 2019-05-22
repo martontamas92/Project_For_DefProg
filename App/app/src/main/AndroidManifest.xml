@@ -15,12 +15,14 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:usesCleartextTraffic="true">
+        <activity android:name=".activities.MySubjectsActivity">
+        </activity>
         <activity
-                android:name=".activities.SubjectActivity"
+                android:name=".activities.AddSubjectActivity"
                 android:label="@string/title_activity_subject">
         </activity>
         <activity
-                android:name="activities.RegisterActivity"
+                android:name=".activities.RegisterActivity"
                 android:label="@string/title_activity_register">
         </activity>
         <activity

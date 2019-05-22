@@ -15,7 +15,7 @@ class Connection : AppCompatActivity() {
         setContentView(R.layout.activity_connection)
 
         doAsync{
-            val result = URL("http://demo2426395.mockable.io/").readText()
+            val result = URL("http://demo2426395.mockable.io/" ).readText()
             uiThread{
                 Log.i( "Request", result )
             }

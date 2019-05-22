@@ -3,8 +3,6 @@ package com.example.qrcodescanner.activities
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.TargetApi
-import android.content.pm.PackageManager
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.app.LoaderManager.LoaderCallbacks
 import android.content.CursorLoader
@@ -22,140 +20,175 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 
 import java.util.ArrayList
-import android.Manifest.permission.READ_CONTACTS
+import android.support.v7.widget.Toolbar
+import android.util.Log
+import android.widget.Toast
+import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
 
 import kotlinx.android.synthetic.main.activity_register.*
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
+import org.json.JSONObject
+import java.net.URL
 
-/**
- * A login screen that offers login via email/password.
- */
-class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private var mAuthTask: UserLoginTask? = null
+class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
+{
+    lateinit var firstNameStr               : String
+    lateinit var middleNameStr              : String
+    lateinit var lastNameStr                : String
+    lateinit var neptunCodeStr              : String
+    lateinit var emailStr                   : String
+    lateinit var passwordStr                : String
+    private var mAuthTask: RegisterTask?   = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
-        // Set up the login form.
-        populateAutoComplete()
+
+        loadToolbar()
         password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
-            if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                attemptLogin()
+            if ( id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL )
+            {
+                attemptRegister()
                 return@OnEditorActionListener true
             }
             false
         })
 
-        email_sign_in_button.setOnClickListener { attemptLogin() }
+        email_sign_in_button.setOnClickListener { attemptRegister() }
     }
 
-    private fun populateAutoComplete() {
-        if (!mayRequestContacts()) {
+    private fun loadToolbar()
+    {
+        val toolbar: Toolbar = findViewById( R.id.toolbar_register )
+
+        setSupportActionBar( toolbar )
+    }
+
+    private fun attemptRegister()
+    {
+        if ( mAuthTask != null )
+        {
             return
         }
 
-        loaderManager.initLoader(0, null, this)
-    }
-
-    private fun mayRequestContacts(): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(email, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                .setAction(android.R.string.ok,
-                    { requestPermissions(arrayOf(READ_CONTACTS), REQUEST_READ_CONTACTS) })
-        } else {
-            requestPermissions(arrayOf(READ_CONTACTS), REQUEST_READ_CONTACTS)
-        }
-        return false
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete()
-            }
-        }
-    }
-
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
-    private fun attemptLogin() {
-        if (mAuthTask != null) {
-            return
-        }
-
-        // Reset errors.
-        email.error = null
-        password.error = null
+        first_name.error    = null
+        middle_name.error   = null
+        last_name.error     = null
+        neptun_code.error   = null
+        email.error         = null
+        password.error      = null
 
         // Store values at the time of the login attempt.
-        val emailStr = email.text.toString()
-        val passwordStr = password.text.toString()
-
-        var cancel = false
-        var focusView: View? = null
+        firstNameStr        = first_name.text.toString()
+        middleNameStr       = middle_name.text.toString()
+        lastNameStr         = last_name.text.toString()
+        neptunCodeStr       = neptun_code.text.toString()
+        emailStr            = email.text.toString()
+        passwordStr         = password.text.toString()
+        var cancel              = false
+        var focusView: View?    = null
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(passwordStr) && !isPasswordValid(passwordStr)) {
+        if ( !TextUtils.isEmpty( passwordStr ) && !isPasswordValid( passwordStr ) )
+        {
             password.error = getString(R.string.error_invalid_password)
             focusView = password
             cancel = true
         }
 
+        // Check for a valid password, if the user entered one.
+        if ( !TextUtils.isEmpty( neptunCodeStr ) && !isNeptunCodeValid( neptunCodeStr ) )
+        {
+            neptun_code.error   = getString(R.string.error_invalid_password)
+            focusView           = neptun_code
+            cancel              = true
+        }
+
         // Check for a valid email address.
-        if (TextUtils.isEmpty(emailStr)) {
-            email.error = getString(R.string.error_field_required)
+        if ( TextUtils.isEmpty( lastNameStr ) )
+        {
+            last_name.error = getString(R.string.error_field_required)
+            focusView       = last_name
+            cancel          = true
+        }
+
+        // Check for a valid email address.
+        if ( TextUtils.isEmpty( firstNameStr ) )
+        {
+            first_name.error    = getString( R.string.error_field_required )
+            focusView           = first_name
+            cancel              = true
+        }
+
+        // Check for a valid email address.
+        if ( TextUtils.isEmpty( emailStr ) )
+        {
+            email.error = getString( R.string.error_field_required )
             focusView = email
             cancel = true
-        } else if (!isEmailValid(emailStr)) {
+        }
+        else if ( !isEmailValid( emailStr ) )
+        {
             email.error = getString(R.string.error_invalid_email)
             focusView = email
             cancel = true
         }
 
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
+        if ( cancel )
+        {
             focusView?.requestFocus()
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true)
-            mAuthTask = UserLoginTask(emailStr, passwordStr)
-            mAuthTask!!.execute(null as Void?)
+        }
+        else
+        {
+            showProgress( true )
+
+            mAuthTask = RegisterTask( emailStr, passwordStr )
+            mAuthTask!!.execute( null as Void? )
         }
     }
 
-    private fun isEmailValid(email: String): Boolean {
-        //TODO: Replace this with your own logic
-        return email.contains("@")
+    private fun isEmailValid( email: String ): Boolean
+    {
+        return ( email.contains( "@" ) || email.contains( "." ) ) && email.length > 4
     }
 
-    private fun isPasswordValid(password: String): Boolean {
-        //TODO: Replace this with your own logic
-        return password.length > 4
+    private fun isPasswordValid( password: String): Boolean
+    {
+        return password.length >= 6
     }
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
+    private fun isNeptunCodeValid( neptunCode: String): Boolean
+    {
+        return neptunCode.length == 6
+    }
+
+    private fun createJsonForRegister(): JSONObject
+    {
+        var jsonObject = JSONObject(
+            """{"Name": {
+                |       "firstName": "$firstNameStr",
+                |       "middleName": "$middleNameStr",
+                |       "lastName": "$lastNameStr"
+                |   },
+                |   "Neptun": {
+                |       "neptun": "$neptunCodeStr"
+                |   },
+                |   "Auth": {
+                |       "uname": "$emailStr",
+                |       "passwd": "$passwordStr"
+                |   }
+                |}
+                |""".trimMargin()
+        )
+        return jsonObject
+    }
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private fun showProgress(show: Boolean) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
@@ -250,16 +283,18 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    inner class UserLoginTask internal constructor(private val mEmail: String, private val mPassword: String) :
+    inner class RegisterTask internal constructor(private val mEmail: String, private val mPassword: String) :
         AsyncTask<Void, Void, Boolean>() {
 
-        override fun doInBackground(vararg params: Void): Boolean? {
+        override fun doInBackground( vararg params: Void ): Boolean?
+        {
             // TODO: attempt authentication against a network service.
 
             try {
                 // Simulate network access.
                 Thread.sleep(2000)
-            } catch (e: InterruptedException) {
+            } catch (e: InterruptedException)
+            {
                 return false
             }
 
@@ -273,30 +308,61 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
                 ?: true
         }
 
-        override fun onPostExecute(success: Boolean?) {
+        override fun onPostExecute( success: Boolean? )
+        {
             mAuthTask = null
-            showProgress(false)
 
-            if (success!!) {
-                finish()
-            } else {
-                password.error = getString(R.string.error_incorrect_password)
-                password.requestFocus()
+            showProgress( false )
+
+            if ( success!! )
+            {
+                doAsync{
+                    val client  = OkHttpClient()
+                    val url     = URL( MyApplication.url + MyApplication.urlRegister )
+                    val json    = MediaType.get( "application/json; charset=utf-8" )
+                    val body    = RequestBody.create( json, createJsonForRegister().toString() )
+                    val request = Request.Builder()
+                        //.addHeader("Authorization", "Bearer $token")
+                        .url( url)
+                        .post(body)
+                        .build()
+                    val response = client.newCall( request ).execute()
+
+                    uiThread{
+                        Log.i( "response", response.request().toString() )
+                        //Log.i( "response", response.body()!!.string() )
+                        Log.i( "response", response.message() )
+                        Log.i( "response", response.isSuccessful.toString() )
+
+                        if( !response.isSuccessful )
+                        {
+                            Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+
+                            return@uiThread
+                        }
+                        else
+                        {
+                            finish()
+                            Toast.makeText( applicationContext, R.string.success, Toast.LENGTH_SHORT  ).show()
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Toast.makeText( this@RegisterActivity, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
             }
         }
 
-        override fun onCancelled() {
+        override fun onCancelled()
+        {
             mAuthTask = null
-            showProgress(false)
+
+            showProgress( false )
         }
     }
 
     companion object {
-
-        /**
-         * Id to identity READ_CONTACTS permission request.
-         */
-        private val REQUEST_READ_CONTACTS = 0
 
         /**
          * A dummy authentication store containing known user names and passwords.
