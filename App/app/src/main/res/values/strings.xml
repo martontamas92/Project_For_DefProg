@@ -3,12 +3,15 @@
     <string name="title_activity_login">Sign in</string>
     <string name="title_activity_register">Registration</string>
     <string name="title_activity_subject">Subject Selection</string>
+    <string name="title_activity_my_subjects">My subjects</string>
     <string name="scan">Scan</string>
+    <string name="my_subjects">My subjects</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
     <string name="logout">Logout</string>
-    <string name="navigation_drawer_open">nyitva</string>
-    <string name="navigation_drawer_close">csukva</string>
+    <string name="presence">Presence: </string>
+    <string name="navigation_drawer_open">open</string>
+    <string name="navigation_drawer_close">close</string>
     <string name="add_subject">Add new subject</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -17,11 +20,13 @@
     <string name="prompt_last_name">Last name</string>
     <string name="prompt_neptun_code">Neptun code</string>
     <string name="prompt_password">Password</string>
+    <string name="prompt_confirm_password">Confirm password</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_register">Register</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
+    <string name="error_password_match">Passwords are do not match</string>
     <string name="error_invalid_neptun_code">This neptun code is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>

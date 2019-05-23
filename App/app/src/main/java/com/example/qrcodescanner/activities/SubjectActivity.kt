@@ -13,7 +13,7 @@ import com.example.qrcodescanner.R
 import android.view.Menu
 
 
-class AddSubjectActivity : AppCompatActivity()
+class SubjectActivity : AppCompatActivity()
 {
     private lateinit var recyclerView           : RecyclerView
     private lateinit var recyclerViewAdapter    : SubjectAdapter

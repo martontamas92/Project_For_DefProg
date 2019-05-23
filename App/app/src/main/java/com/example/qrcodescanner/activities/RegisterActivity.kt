@@ -38,13 +38,14 @@ import java.net.URL
 
 class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
 {
-    lateinit var firstNameStr               : String
-    lateinit var middleNameStr              : String
-    lateinit var lastNameStr                : String
-    lateinit var neptunCodeStr              : String
-    lateinit var emailStr                   : String
-    lateinit var passwordStr                : String
-    private var mAuthTask: RegisterTask?   = null
+    private lateinit var firstNameStr       : String
+    private lateinit var middleNameStr      : String
+    private lateinit var lastNameStr        : String
+    private lateinit var neptunCodeStr      : String
+    private lateinit var emailStr           : String
+    private lateinit var passwordStr        : String
+    private lateinit var confirmPasswordStr : String
+    private var mAuthTask: RegisterTask?    = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,32 +78,32 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
             return
         }
 
-        first_name.error    = null
-        middle_name.error   = null
-        last_name.error     = null
-        neptun_code.error   = null
-        email.error         = null
-        password.error      = null
+        first_name.error        = null
+        middle_name.error       = null
+        last_name.error         = null
+        neptun_code.error       = null
+        email.error             = null
+        password.error          = null
+        password_confirm.error  = null
 
-        // Store values at the time of the login attempt.
-        firstNameStr        = first_name.text.toString()
-        middleNameStr       = middle_name.text.toString()
-        lastNameStr         = last_name.text.toString()
-        neptunCodeStr       = neptun_code.text.toString()
-        emailStr            = email.text.toString()
-        passwordStr         = password.text.toString()
+        firstNameStr            = first_name.text.toString()
+        middleNameStr           = middle_name.text.toString()
+        lastNameStr             = last_name.text.toString()
+        neptunCodeStr           = neptun_code.text.toString()
+        emailStr                = email.text.toString()
+        passwordStr             = password.text.toString()
+        confirmPasswordStr      = password_confirm.text.toString()
+
         var cancel              = false
         var focusView: View?    = null
 
-        // Check for a valid password, if the user entered one.
         if ( !TextUtils.isEmpty( passwordStr ) && !isPasswordValid( passwordStr ) )
         {
-            password.error = getString(R.string.error_invalid_password)
+            password.error = getString( R.string.error_invalid_password )
             focusView = password
             cancel = true
         }
 
-        // Check for a valid password, if the user entered one.
         if ( !TextUtils.isEmpty( neptunCodeStr ) && !isNeptunCodeValid( neptunCodeStr ) )
         {
             neptun_code.error   = getString(R.string.error_invalid_password)
@@ -110,7 +111,12 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
             cancel              = true
         }
 
-        // Check for a valid email address.
+        if ( !isPasswordMatch( passwordStr, confirmPasswordStr ) )
+        {
+            password.error   = getString( R.string.error_password_match )
+            focusView        = password
+            cancel           = true
+        }
         if ( TextUtils.isEmpty( lastNameStr ) )
         {
             last_name.error = getString(R.string.error_field_required)
@@ -118,7 +124,6 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
             cancel          = true
         }
 
-        // Check for a valid email address.
         if ( TextUtils.isEmpty( firstNameStr ) )
         {
             first_name.error    = getString( R.string.error_field_required )
@@ -126,18 +131,17 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
             cancel              = true
         }
 
-        // Check for a valid email address.
         if ( TextUtils.isEmpty( emailStr ) )
         {
             email.error = getString( R.string.error_field_required )
-            focusView = email
-            cancel = true
+            focusView   = email
+            cancel      = true
         }
         else if ( !isEmailValid( emailStr ) )
         {
             email.error = getString(R.string.error_invalid_email)
-            focusView = email
-            cancel = true
+            focusView   = email
+            cancel      = true
         }
 
         if ( cancel )
@@ -161,6 +165,11 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
     private fun isPasswordValid( password: String): Boolean
     {
         return password.length >= 6
+    }
+
+    private fun isPasswordMatch( password: String, confirmPassword : String ): Boolean
+    {
+        return password == confirmPassword
     }
 
     private fun isNeptunCodeValid( neptunCode: String): Boolean
@@ -253,21 +262,10 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
             cursor.moveToNext()
         }
 
-        addEmailsToAutoComplete(emails)
     }
 
     override fun onLoaderReset(cursorLoader: Loader<Cursor>) {
 
-    }
-
-    private fun addEmailsToAutoComplete(emailAddressCollection: List<String>) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        val adapter = ArrayAdapter(
-            this@RegisterActivity,
-            android.R.layout.simple_dropdown_item_1line, emailAddressCollection
-        )
-
-        email.setAdapter(adapter)
     }
 
     object ProfileQuery {
@@ -276,7 +274,6 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
             ContactsContract.CommonDataKinds.Email.IS_PRIMARY
         )
         val ADDRESS = 0
-        val IS_PRIMARY = 1
     }
 
     /**
@@ -288,12 +285,11 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
 
         override fun doInBackground( vararg params: Void ): Boolean?
         {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
+            try
+            {
                 Thread.sleep(2000)
-            } catch (e: InterruptedException)
+            }
+            catch ( e: InterruptedException )
             {
                 return false
             }
@@ -302,7 +298,6 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
                 .map { it.split(":") }
                 .firstOrNull { it[0] == mEmail }
                 ?.let {
-                    // Account exists, return true if the password matches.
                     it[1] == mPassword
                 }
                 ?: true
@@ -324,7 +319,7 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
                     val request = Request.Builder()
                         //.addHeader("Authorization", "Bearer $token")
                         .url( url)
-                        .post(body)
+                        .post( body )
                         .build()
                     val response = client.newCall( request ).execute()
 
@@ -362,12 +357,8 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
         }
     }
 
-    companion object {
-
-        /**
-         * A dummy authentication store containing known user names and passwords.
-         * TODO: remove after connecting to a real authentication system.
-         */
+    companion object
+    {
         private val DUMMY_CREDENTIALS = arrayOf("foo@example.com:hello", "bar@example.com:world")
     }
 }

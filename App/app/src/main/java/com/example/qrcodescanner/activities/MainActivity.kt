@@ -79,6 +79,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             {
                 startSubjectActivity()
             }
+            R.id.my_subject ->
+            {
+                startMySubjectsActivity()
+            }
             R.id.register ->
             {
                 startRegisterActivity()
@@ -116,7 +120,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun startSubjectActivity()
     {
-        val intent = Intent( this, AddSubjectActivity::class.java )
+        val intent = Intent( this, SubjectActivity::class.java )
+
+        startActivity( intent )
+    }
+
+    private fun startMySubjectsActivity()
+    {
+        val intent = Intent( this, MySubjectsActivity::class.java )
 
         startActivity( intent )
     }

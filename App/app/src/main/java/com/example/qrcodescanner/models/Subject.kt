@@ -1,12 +1,21 @@
 package com.example.qrcodescanner.models
 
-class Subject( id: Int, name: String, teacher: String )
+import org.json.JSONObject
+
+class Subject
 {
     var id: Int?         = null
     var name: String?    = null
     var teacher: String? = null
 
-    init
+    constructor(){}
+
+    constructor( jsonObject: JSONObject )
+    {
+
+    }
+
+    constructor( id: Int, name: String, teacher: String )
     {
         this.id         = id
         this.name       = name
