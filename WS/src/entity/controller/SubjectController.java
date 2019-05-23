@@ -11,6 +11,7 @@ import entity.interfaces.ISubject;
 import model.Subject;
 
 public class SubjectController implements ISubject {
+	private DemonstratorController dm = new DemonstratorController();
 
 	private Connection conn = null;
 	@Override
@@ -21,7 +22,8 @@ public class SubjectController implements ISubject {
 			String sql = "INSERT INTO subject_sj(sj_d_id, sj_name) " + "VALUES(?,?)";
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-			pstmt.setString(1, ""); // need to get id from demonstrator table;
+			String id = dm.demonstratorByName(s.getDemonstrator().getName()).toString();
+			pstmt.setString(1, id); // need to get id from demonstrator table;
 			pstmt.setString(2, s.getSubjectName());
 			int rowAffected = pstmt.executeUpdate();
             if(rowAffected == 1)

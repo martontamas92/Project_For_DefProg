@@ -1,0 +1,15 @@
+http://localhost:8080/WS/home/authentication/login
+POST /WS/home/authentication/login? HTTP/1.1
+Host: localhost:8080
+Content-Type: application/x-www-form-urlencoded
+User-Agent: PostmanRuntime/7.13.0
+Accept: */*
+Cache-Control: no-cache
+Postman-Token: 47081d15-76f0-4727-8dfc-60198d770008,e1cf61e1-efff-4e3c-80d9-ad7ecf891497
+Host: localhost:8080
+accept-encoding: gzip, deflate
+content-length: 40
+Connection: keep-alive
+cache-control: no-cache
+
+uname=login&passwd=passwd&status=demonstrator

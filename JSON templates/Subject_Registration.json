@@ -1,0 +1,11 @@
+http://localhost:8080/WS/home/subject/registrate
+{
+	    "subjectName": "proba",
+	    "demonstrator": {
+	        "name": {
+	            "firstName": "tanito",
+	            "lastName": "ignac",
+	            "middleName": "benedek"
+	        }
+	    }
+	} 
