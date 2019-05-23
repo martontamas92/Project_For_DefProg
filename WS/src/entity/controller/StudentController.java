@@ -10,6 +10,7 @@ import business_model.Name;
 import business_model.Neptun_Code;
 import entity.interfaces.DBconnection;
 import entity.interfaces.IStudent;
+import model.Demonstrator;
 import model.Student;
 
 public class StudentController {
@@ -60,8 +61,23 @@ public class StudentController {
 
 
 	public Student findStudent(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			String sql = "Select * from student_st where st_id = ?";
+			conn = DBconnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, id);
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+				Name name = Name.NameBuilder(rs.getString("st_fn"), rs.getString("st_mn"), rs.getString("st_ln"));
+				Neptun_Code nept = Neptun_Code.buildNeptun_Code(rs.getString("st_neptun"));
+				Student st =Student.studentBuilder(name, nept);
+				st.setId(id);
+
+			return st;
+		}catch(Exception e ) {
+			System.out.println(e.getMessage());
+			return null;
+		}
 	}
 
 

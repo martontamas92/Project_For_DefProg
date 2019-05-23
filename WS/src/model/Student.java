@@ -28,6 +28,10 @@ public class Student extends User implements Serializable{
 		return id;
 	}
 
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
 	private Student(@NotNull Name name,@NotNull Neptun_Code neptun) {
 		super();
 		this.neptun = neptun;
@@ -95,6 +99,7 @@ public class Student extends User implements Serializable{
 	public String toString() {
 		return "Student [neptun=" + neptun + ", getName()=" + getName().toString() ;
 	}
+
 
 
 }

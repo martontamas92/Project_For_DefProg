@@ -38,6 +38,7 @@ public class DemonstratorAuthController implements IAuth {
 		try {
 		String sql = "SELECT * FROM de_auth_a " + "WHERE a_un = ?" ;
 		conn = DBconnection.getConnection();
+
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 
 		pstmt.setString(1, username);
@@ -56,21 +57,44 @@ public class DemonstratorAuthController implements IAuth {
 	public boolean valid(String username, String passwd) {
 		try {
 			if (userNameExists(username)) {
-				String sql = "SELECT * FROM de_auth_a " + "WHERE a_un like '?'";
+				String sql = "SELECT * FROM de_auth_a WHERE a_un like \"" + username + "\"";
 				conn = DBconnection.getConnection();
 				PreparedStatement pstmt = conn.prepareStatement(sql);
+				//pstmt.setString(1, username);
+
 				ResultSet rs = pstmt.executeQuery();
-				if(rs.getString("a_pwd").equals(passwd)) {return true;				}
+				rs.next();
+				System.out.println(rs.getString("a_pwd"));
+				if(rs.getString("a_pwd").equals(passwd)) {return true;}
 				return false;
 			}
 			return false;
 		}catch (Exception e) {
 			// TODO: handle exception
-			System.out.println(e.getMessage());
+			System.out.println("dem valid:" + e.getMessage());
+			//System.out.println( e.printStackTrace(););
 			return false;
 
 		}
 
 	}
+	public int getDemonstratorId(String username) {
 
+		try {
+			String sql = "SELECT a_de_id FROM de_auth_a WHERE a_un like \"" + username + "\"";
+			conn = DBconnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			//pstmt.setString(1, username);
+
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+			System.out.println(rs.getString(("a_de_id").toString()));
+			return rs.getInt("a_de_id");
+		}catch (Exception e) {
+			return 0;
+		}
+
+
+
+	}
 }

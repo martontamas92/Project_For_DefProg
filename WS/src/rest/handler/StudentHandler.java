@@ -29,6 +29,7 @@ public class StudentHandler {
 	private StudentAuthController authRepository = new StudentAuthController();
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/registrate")
 	public Response proba(String data) {
 
@@ -58,14 +59,15 @@ public class StudentHandler {
 
 			ArrayList<Student> students = studentRepository.allStudent();
 			Student st = Student.studentBuilder(name, nept);
-
+			String student_err = "error: student already exists";
+			String username_err = "error: username already exist";
 			//System.out.println(students.contains(st));
-			if(students.contains(st)) {return Response.status(204).entity("Student Already exists!").build();}
-			if(authRepository.userNameExists(uname)) {return Response.status(204).entity("Username Already exists!").build();}
+			if(students.contains(st)) {return Response.status(403).type(MediaType.APPLICATION_JSON).entity(student_err).build();}
+			if(authRepository.userNameExists(uname)) {return Response.status(403).type(MediaType.APPLICATION_JSON).entity(username_err).build();}
 			int a = studentRepository.addStudent(st);
 			Auth auth = new Auth(a, userName, password);
 			if(!authRepository.add(auth)) {return Response.status(500).entity("Registration failed").build();}
-			return Response.status(201).entity(st.toString()).build();
+			return Response.status(200).entity("Succes").build();
 
 
 

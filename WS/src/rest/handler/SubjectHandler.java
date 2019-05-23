@@ -9,6 +9,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.hibernate.validator.internal.util.privilegedactions.GetDeclaredConstructor;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import business_model.Name;
@@ -34,8 +36,11 @@ public class SubjectHandler {
 			ObjectMapper mapper = new ObjectMapper();
 			Subject s;
 			s = mapper.readValue(data, Subject.class);
-			//subjectController.add(s); // don't call its not finished yet
-			
+
+
+
+			subjectRepository.addSubject(s); // don't call its not finished yet
+
 			return Response.status(201).entity(s.toString()).build();
 
 		} catch (Exception e) {

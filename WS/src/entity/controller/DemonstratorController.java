@@ -49,8 +49,23 @@ public class DemonstratorController implements IDemonstrator {
 
 	@Override
 	public Demonstrator findDemonstrator(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+
+		try {
+			String sql = "Select * from demonstrator_de where de_id = ?";
+			conn = DBconnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, id);
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+				Name name = Name.NameBuilder(rs.getString("de_fn"), rs.getString("de_mn"), rs.getString("de_ln"));
+				Demonstrator d =new Demonstrator(name);
+				d.setId(id);
+
+			return d;
+		}catch(Exception e ) {
+			System.out.println(e.getMessage());
+			return new Demonstrator();
+		}
 	}
 
 	@Override
@@ -73,7 +88,27 @@ public class DemonstratorController implements IDemonstrator {
 		}
 
 	}
+	public Integer demonstratorByName(Name n) {
+		try {
+			System.out.println(n.toString());
+			String sql = "Select de_id From demonstrator_de where de_fn = ? and de_mn = ? and de_ln = ?;";
+			conn = DBconnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
 
+			pstmt.setString(1, n.getFirstName());
+			pstmt.setString(2, n.getLastName());
+			pstmt.setString(3, n.getMiddleName());
+			System.out.println(pstmt.toString());
+			ResultSet rs  = pstmt.executeQuery();
+			rs.next();
+			return rs.getInt("de_id");
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+			return 0;
+		}
+
+
+	}
 	@Override
 	public void addDemonstrators(Demonstrator[] ds) {
 		// TODO Auto-generated method stub
