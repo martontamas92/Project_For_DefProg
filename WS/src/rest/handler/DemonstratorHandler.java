@@ -30,7 +30,7 @@ public class DemonstratorHandler {
 	@Path("/registrate")
 	public Response registrate(String data) {
 		try {
-			System.out.println(data);
+			//System.out.println(data);
 			JSONObject json = new JSONObject(data);
 			 String firstName = json.getJSONObject("Name").getString("firstName");
 			 String middleName = json.getJSONObject("Name").getString("middleName");
@@ -43,11 +43,11 @@ public class DemonstratorHandler {
 			 Demonstrator d = new Demonstrator(n);
 			 UserName userName = UserName.userNameBuilder(uname);
 			 Password password = Password.passwordBuilder(passwd);
-			 System.out.println(uname);
+			 //System.out.println(uname);
 
 			 ArrayList<Demonstrator> ds = demRepository.allDemonstrator();
-			 if(ds.contains(d)) {return Response.status(204).entity("Demonstrator Already exists!").build();}
-			 if(authRepository.userNameExists(uname)) {return Response.status(204).entity("Username Already exists!").build();}
+			 if(ds.contains(d)) {return Response.status(400).entity("{ \"message\": \"Demonstrator Already exists!\"}").build();}
+			 if(authRepository.userNameExists(uname)) {return Response.status(400).entity("{ \\\"message\\\": \\\" Username Already exists!\"").build();}
 			 int a = demRepository.addDemonstrator(d);
 			 Auth auth = new Auth(a, userName, password);
 			 if(!authRepository.add(auth)) {return Response.status(500).entity("Registration failed").build();}

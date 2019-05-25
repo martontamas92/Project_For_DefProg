@@ -42,6 +42,22 @@ public class SubjectController implements ISubject {
 		return subjectId;
 	}
 
+	public Integer subjectIdByName(String subjectName) {
+		try {
+			String sql = "SELECT sj_id FROM subject_sj where sj_name = ?";
+			conn = DBconnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, subjectName);
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+			return rs.getInt("sj_id");
+
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		return 0;
+	}
+
 	@Override
 	public Subject findSubject(Integer id) {
 		// TODO Auto-generated method stub
@@ -52,6 +68,28 @@ public class SubjectController implements ISubject {
 	public ArrayList<Subject> allSubject() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public ArrayList<String> allSubjectByDeId(Integer id){
+		try {
+			ArrayList<String>resultList = new ArrayList<>();
+			String sql = "SELECT * FROM subject_sj where sj_d_id = ?";
+			conn = DBconnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, id);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				//Subject s = new Subject(subjectName, demonstrator);
+				resultList.add(rs.getString("sj_name"));
+			}
+			return resultList;
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+
+
 	}
 
 	@Override

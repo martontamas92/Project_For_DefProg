@@ -3,6 +3,8 @@ package rest.handler;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -12,6 +14,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.json.JSONObject;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
 import business_model.Name;
 import business_model.Neptun_Code;
 import business_model.Password;
@@ -20,6 +26,7 @@ import model.Auth;
 import model.Student;
 import entity.controller.StudentAuthController;
 import entity.controller.StudentController;
+import entity.controller.SubjectController;
 
 
 @Path("/student")
@@ -107,4 +114,53 @@ public class StudentHandler {
 		return studentRepository.allStudent();
 	}
 
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/take-class")
+	public Response takeClass(String data) {
+		try {
+			SubjectController sc = new SubjectController();
+			ObjectMapper mapper = new ObjectMapper();
+			 Map<String, Integer> map =
+				        mapper.readValue(data, TypeFactory.defaultInstance()
+				                         .constructMapType(HashMap.class, String.class, Integer.class));
+			 Map<String, String> map2 =
+				        mapper.readValue(data, TypeFactory.defaultInstance()
+				                         .constructMapType(HashMap.class, String.class, String.class));
+			Integer stid = map.get("st_id");
+			Integer sjid = sc.subjectIdByName(map2.get("sj_name"));
+
+
+			//add taken class to database
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		return null; // will dissapear
+	}
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/classes-taken")
+	public Response possibleClasses(String data) {
+
+		try {
+			ArrayList<Map<String, String>> subjects = new ArrayList<>();
+			ObjectMapper mapper = new ObjectMapper();
+			 Map<String, Integer> map =
+				        mapper.readValue(data, TypeFactory.defaultInstance()
+				                         .constructMapType(HashMap.class, String.class, Integer.class));
+			Integer stid = map.get("st_id");
+			//Integer sjid = sc.subjectIdByName(subjectName)
+			//Integer sjid = map.get("sj_id");
+
+			//
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		return Response.status(200).entity("Under contruction").build(); // will dissapear
+	}
 }
