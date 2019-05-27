@@ -1,19 +1,22 @@
 package rest.handler;
 
-import java.io.IOException;
+
+import java.time.LocalDate;
+
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.hibernate.validator.internal.util.privilegedactions.GetDeclaredConstructor;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -24,7 +27,9 @@ import javax.ws.rs.core.MediaType;
 
 
 import entity.controller.SubjectController;
+
 import model.Demonstrator;
+import model.Lecture;
 import model.Subject;
 
 @Path("/subject")
@@ -63,30 +68,40 @@ public class SubjectHandler {
 	}
 
 	@POST
-	@Produces(MediaType.APPLICATION_JSON)
+
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/create-lecture")
 	public Response lecture(String data) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			Demonstrator d;
-			Date date;
-			d = mapper.readValue(data, Demonstrator.class);
-			date = mapper.readValue(data, Date.class);
+//			Demonstrator d;
+
+
+			//Date date ;
+			Subject s = mapper.readValue(data, Subject.class);
+//			String subjectName = mapper.readValue(data, String.class);
+//			Subject s = new Subject(subjectName, d);
+			//LocalDate date;
+			//date = mapper.readValue(data, Date.class);
+			Lecture l = new Lecture(LocalDate.now(), s);
+			int a = subjectRepository.createLecture(l);
 			String url = "";
+
 			// have to insert record to database;
-			return Response.status(200).entity(url).build();
+			return Response.status(200).entity("Sikeres letrehozas!" + a).build();
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
+			return null;
 		}
-		return null;
+
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/subjectList")
+	@Path("/demonstrator-subjectList")
 	public ArrayList<String> getSubjects(String data){
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -102,5 +117,25 @@ public class SubjectHandler {
 		}
 
 		return null;
+	}
+
+
+
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/attend")
+	public Response attendLecture(String data) {
+
+
+		return Response.status(200).entity("").build();
+	}
+
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/student-subjectList")
+	public Response getStudentSubject(@FormParam("id") Integer id){
+		return Response.status(200).entity(subjectRepository.allSubjectByStId(id)).build();
 	}
 }

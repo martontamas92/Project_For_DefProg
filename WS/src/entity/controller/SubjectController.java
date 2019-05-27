@@ -1,13 +1,20 @@
 package entity.controller;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.validation.constraints.AssertFalse.List;
+
+import com.mysql.cj.protocol.ResultListener;
 
 import entity.interfaces.DBconnection;
 import entity.interfaces.ISubject;
+import model.Lecture;
 import model.Subject;
 
 public class SubjectController implements ISubject {
@@ -87,6 +94,76 @@ public class SubjectController implements ISubject {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 			return null;
+		}
+
+
+	}
+
+	public int createLecture(Lecture lecture){
+		ResultSet rs;
+		int subjectId = 0;
+		try {
+			String sql = "INSERT INTO lecture_le(le_sj_id, le_date) " + "VALUES(?,STR_TO_DATE(?,'%Y-%m-%d'))";
+			conn = DBconnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+//			String id = dm.demonstratorByName(s.getDemonstrator().getName()).toString();
+			//pstmt.setInt(2, lecture.getSubject().getDemonstrator().getId()); // need to get id from demonstrator table;
+			pstmt.setInt(1, subjectIdByName(lecture.getSubject().getSubjectName()));
+			pstmt.setString(2, lecture.getDay().toString());
+//			System.out.println(pstmt.toString());
+			int rowAffected = pstmt.executeUpdate();
+            if(rowAffected == 1)
+            {
+                // get candidate id
+                rs = pstmt.getGeneratedKeys();
+                if(rs.next())
+                    subjectId = rs.getInt(1);
+
+            }
+
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+
+		}
+
+		return subjectId;
+
+	}
+
+	public ArrayList<HashMap<String,String>> allSubjectByStId(Integer id){
+
+		ArrayList<HashMap<String,String>> resultList = new ArrayList<>();
+		try {
+
+			String sql = "select sj_id, CONCAT(de_fn, \" \", de_mn, \" \", de_ln) as name, sj_name from demonstrator_de, subject_sj where sj_d_id = de_id and de_id in(\r\n" +
+					"	select sj_d_id from subject_sj where sj_id not in (\r\n" +
+					"		select at_sj_id from sj_st_attend_at where at_st_id=?\r\n" +
+					"	)\r\n" +
+					");";
+
+
+			conn = DBconnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, id);
+			ResultSet rs = pstmt.executeQuery();
+
+			while(rs.next()) {
+				HashMap<String,String> hm = new HashMap<>();
+				Integer sjId = rs.getInt("sj_id");
+				String deName = rs.getString("name");
+				String sjName = rs.getString("sj_name");
+				hm.put("id", sjId.toString());
+				hm.put("name", deName);
+				hm.put("subjectName", sjName);
+				//resultList.add();
+				//Subject s = new Subject(subjectName, demonstrator);
+				resultList.add(hm);
+			}
+			return resultList;
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			return resultList;
 		}
 
 

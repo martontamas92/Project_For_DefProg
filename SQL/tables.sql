@@ -61,9 +61,7 @@ CREATE TABLE IF NOT EXISTS sj_st_attend_at(
 CREATE TABLE IF NOT EXISTS lecture_le(
     le_id int AUTO_INCREMENT,
     le_sj_id int NOT NULL,
-    le_st_id int NOT NULL,
     le_date DATE NOT NULL,
     PRIMARY KEY(le_id),
-    FOREIGN KEY (le_sj_id) REFERENCES subject_sj(sj_id),
-    FOREIGN KEY (le_st_id) REFERENCES student_st(st_id)
+    FOREIGN KEY (le_sj_id) REFERENCES subject_sj(sj_id)
 ) ENGINE=INNODB;

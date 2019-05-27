@@ -1,5 +1,7 @@
 package model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import business_model.QrCode;
@@ -7,34 +9,27 @@ import business_model.QrCode;
 
 
 public class Lecture {
-	private Date day;
-	private Demonstrator demonstrator;
-	private Subject subject;
-	private QrCode qr;
+	private LocalDate day;
 
-	public Lecture(Date day, Demonstrator demonstrator, Subject subject, QrCode qr) {
-		super();
+	private Subject subject;
+
+
+	public Lecture(LocalDate day, Subject subject) {
+		//super();
 		this.day = day;
-		this.demonstrator = demonstrator;
+
 		this.subject = subject;
-		this.qr = qr;
+
 	}
 
-	public Date getDay() {
+	public LocalDate getDay() {
 		return day;
 	}
 
-	public void setDay(Date day) {
+	public void setDay(LocalDate day) {
 		this.day = day;
 	}
 
-	public Demonstrator getDemonstrator() {
-		return demonstrator;
-	}
-
-	public void setDemonstrator(Demonstrator demonstrator) {
-		this.demonstrator = demonstrator;
-	}
 
 	public Subject getSubject() {
 		return subject;
@@ -44,21 +39,14 @@ public class Lecture {
 		this.subject = subject;
 	}
 
-	public QrCode getQr() {
-		return qr;
-	}
 
-	public void setQr(QrCode qr) {
-		this.qr = qr;
-	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((day == null) ? 0 : day.hashCode());
-		result = prime * result + ((demonstrator == null) ? 0 : demonstrator.hashCode());
-		result = prime * result + ((qr == null) ? 0 : qr.hashCode());
+
 		result = prime * result + ((subject == null) ? 0 : subject.hashCode());
 		return result;
 	}
@@ -77,16 +65,6 @@ public class Lecture {
 				return false;
 		} else if (!day.equals(other.day))
 			return false;
-		if (demonstrator == null) {
-			if (other.demonstrator != null)
-				return false;
-		} else if (!demonstrator.equals(other.demonstrator))
-			return false;
-		if (qr == null) {
-			if (other.qr != null)
-				return false;
-		} else if (!qr.equals(other.qr))
-			return false;
 		if (subject == null) {
 			if (other.subject != null)
 				return false;
@@ -97,7 +75,7 @@ public class Lecture {
 
 	@Override
 	public String toString() {
-		return "Lecture [day=" + day + ", demonstrator=" + demonstrator + ", subject=" + subject + ", qr=" + qr + "]";
+		return "Lecture [day=" + day +  ", subject=" + subject +  "]";
 	}
 
 

@@ -23,7 +23,11 @@ public class Demonstrator extends User{
 		this.name = name;
 
 	}
-
+	public Demonstrator(@NotNull Integer id, Name name) {
+		super();
+		this.name=name;
+		this.id=id;
+	}
 
 
 	@Override

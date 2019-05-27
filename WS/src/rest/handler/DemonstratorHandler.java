@@ -46,8 +46,8 @@ public class DemonstratorHandler {
 			 //System.out.println(uname);
 
 			 ArrayList<Demonstrator> ds = demRepository.allDemonstrator();
-			 if(ds.contains(d)) {return Response.status(400).entity("{ \"message\": \"Demonstrator Already exists!\"}").build();}
-			 if(authRepository.userNameExists(uname)) {return Response.status(400).entity("{ \\\"message\\\": \\\" Username Already exists!\"").build();}
+			 if(ds.contains(d)) {return Response.status(200).entity("{ \"message\": \"Demonstrator Already exists!\"}").build();}
+			 if(authRepository.userNameExists(uname)) {return Response.status(200).entity("{ \"message\": \" Username Already exists!\"}").build();}
 			 int a = demRepository.addDemonstrator(d);
 			 Auth auth = new Auth(a, userName, password);
 			 if(!authRepository.add(auth)) {return Response.status(500).entity("Registration failed").build();}

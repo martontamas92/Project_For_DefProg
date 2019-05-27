@@ -64,7 +64,7 @@ public class DemonstratorController implements IDemonstrator {
 			return d;
 		}catch(Exception e ) {
 			System.out.println(e.getMessage());
-			return new Demonstrator();
+			return null;
 		}
 	}
 
@@ -91,16 +91,18 @@ public class DemonstratorController implements IDemonstrator {
 	public Integer demonstratorByName(Name n) {
 		try {
 			System.out.println(n.toString());
-			String sql = "Select de_id From demonstrator_de where de_fn = ? and de_mn = ? and de_ln = ?;";
+			String sql = "Select de_id From demonstrator_de where de_fn like ? and de_mn like ? and de_ln like ?";
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 
 			pstmt.setString(1, n.getFirstName());
-			pstmt.setString(2, n.getLastName());
-			pstmt.setString(3, n.getMiddleName());
+			pstmt.setString(2, n.getMiddleName());
+			pstmt.setString(3, n.getLastName());
+
 			System.out.println(pstmt.toString());
 			ResultSet rs  = pstmt.executeQuery();
 			rs.next();
+			System.out.println(rs.getInt("de_id"));
 			return rs.getInt("de_id");
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
