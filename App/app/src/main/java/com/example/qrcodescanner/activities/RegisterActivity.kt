@@ -152,7 +152,7 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
         {
             showProgress( true )
 
-            mAuthTask = RegisterTask( emailStr, passwordStr )
+            mAuthTask = RegisterTask()
             mAuthTask!!.execute( null as Void? )
         }
     }
@@ -199,11 +199,10 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private fun showProgress(show: Boolean) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+    private fun showProgress(show: Boolean)
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2)
+        {
             val shortAnimTime = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
 
             login_form.visibility = if (show) View.GONE else View.VISIBLE
@@ -225,7 +224,9 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
                         login_progress.visibility = if (show) View.VISIBLE else View.GONE
                     }
                 })
-        } else {
+        }
+        else
+        {
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
             login_progress.visibility   = if (show) View.VISIBLE else View.GONE
@@ -233,7 +234,8 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
         }
     }
 
-    override fun onCreateLoader(i: Int, bundle: Bundle?): Loader<Cursor> {
+    override fun onCreateLoader(i: Int, bundle: Bundle?): Loader<Cursor>
+    {
         return CursorLoader(
             this,
             // Retrieve data rows for the device user's 'profile' contact.
@@ -254,7 +256,8 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
         )
     }
 
-    override fun onLoadFinished(cursorLoader: Loader<Cursor>, cursor: Cursor) {
+    override fun onLoadFinished(cursorLoader: Loader<Cursor>, cursor: Cursor)
+    {
         val emails = ArrayList<String>()
         cursor.moveToFirst()
         while (!cursor.isAfterLast) {
@@ -280,27 +283,20 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    inner class RegisterTask internal constructor(private val mEmail: String, private val mPassword: String) :
-        AsyncTask<Void, Void, Boolean>() {
+    inner class RegisterTask internal constructor() : AsyncTask<Void, Void, Boolean>() {
 
         override fun doInBackground( vararg params: Void ): Boolean?
         {
             try
             {
-                Thread.sleep(2000)
+                Thread.sleep( 2000 )
             }
             catch ( e: InterruptedException )
             {
                 return false
             }
 
-            return DUMMY_CREDENTIALS
-                .map { it.split(":") }
-                .firstOrNull { it[0] == mEmail }
-                ?.let {
-                    it[1] == mPassword
-                }
-                ?: true
+            return true
         }
 
         override fun onPostExecute( success: Boolean? )
@@ -313,7 +309,7 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
             {
                 doAsync{
                     val client  = OkHttpClient()
-                    val url     = URL( MyApplication.url + MyApplication.urlRegister )
+                    val url     = URL( MyApplication.URL + MyApplication.REGISTER )
                     val json    = MediaType.get( "application/json; charset=utf-8" )
                     val body    = RequestBody.create( json, createJsonForRegister().toString() )
                     val request = Request.Builder()
