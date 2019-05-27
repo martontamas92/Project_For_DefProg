@@ -12,7 +12,9 @@ class Subject
 
     constructor( jsonObject: JSONObject )
     {
-
+        this.id         = jsonObject.getInt( "id" )
+        this.name       = jsonObject.getString( "name" )
+        this.teacher    = jsonObject.getString( "teacher" )
     }
 
     constructor( id: Int, name: String, teacher: String )

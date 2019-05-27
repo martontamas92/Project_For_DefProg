@@ -1,5 +1,6 @@
 package com.example.qrcodescanner.activities
 
+import android.app.Application
 import android.content.Intent
 import android.content.res.Configuration
 import android.support.v7.app.AppCompatActivity
@@ -11,14 +12,17 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.widget.Toast
+import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
 import com.google.zxing.integration.android.IntentIntegrator
+import kotlinx.android.synthetic.main.nav_header_main.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener
 {
     private lateinit var drawer: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
+    private var myApplication  = MyApplication()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -169,4 +173,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+
+        //val user = myApplication.user
+
+        //username.text = user?.firstName + " " + user?.lastName
+
+    }
 }

@@ -21,9 +21,18 @@ import android.widget.TextView
 
 import java.util.ArrayList
 import android.support.v7.widget.Toolbar
+import android.util.Log
+import android.widget.Toast
+import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
+import com.example.qrcodescanner.models.User
 
 import kotlinx.android.synthetic.main.activity_login.*
+import okhttp3.*
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
+import org.json.JSONObject
+import java.net.URL
 
 /**
  * A login screen that offers login via email/password.
@@ -32,7 +41,10 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private var mAuthTask: UserLoginTask? = null
+    private var mAuthTask               : UserLoginTask? = null
+    private lateinit var emailStr       : String
+    private lateinit var passwordStr    : String
+    private var myApplication           = MyApplication()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -69,8 +81,8 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         password.error = null
 
         // Store values at the time of the login attempt.
-        val emailStr = email.text.toString()
-        val passwordStr = password.text.toString()
+        emailStr = email.text.toString()
+        passwordStr = password.text.toString()
 
         var cancel = false
         var focusView: View? = null
@@ -226,25 +238,65 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
                 return false
             }
 
-            return DUMMY_CREDENTIALS
-                .map { it.split(":") }
-                .firstOrNull { it[0] == mEmail }
-                ?.let {
-                    // Account exists, return true if the password matches.
-                    it[1] == mPassword
-                }
-                ?: true
+            return true
         }
 
-        override fun onPostExecute(success: Boolean?) {
+        override fun onPostExecute( success: Boolean? )
+        {
             mAuthTask = null
-            showProgress(false)
 
-            if (success!!) {
-                finish()
-            } else {
-                password.error = getString(R.string.error_incorrect_password)
-                password.requestFocus()
+            showProgress( false )
+
+            if ( success!! )
+            {
+                doAsync{
+                    val client          = OkHttpClient()
+                    val url             = URL( MyApplication.URL + MyApplication.LOGIN )
+                    val fromBodyBuilder = FormBody.Builder()
+
+                    fromBodyBuilder.add( "uname", emailStr )
+                    fromBodyBuilder.add( "passwd", passwordStr )
+                    fromBodyBuilder.add( "status", "student" )
+
+                    val request = Request.Builder()
+                        //.addHeader("Authorization", "Bearer $token")
+                        .url( url)
+                        .post( fromBodyBuilder.build() )
+                        .build()
+
+                    val response = client.newCall( request ).execute()
+
+                    uiThread{
+                        Log.i( "response", response.isSuccessful.toString() )
+
+                        if( !response.isSuccessful )
+                        {
+                            Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+
+                            return@uiThread
+                        }
+                        else
+                        {
+                            var jsonData = response.body()!!.string()
+                            //Log.i( "response", response.request().toString() )
+                            Log.i( "response", jsonData )
+                            Log.i( "response", response.message() )
+
+                            myApplication.user = User( jsonData )
+
+                            val jsonObject  = JSONObject( jsonData )
+
+                            Log.i( "response", jsonObject.getInt( "id" ).toString() )
+                            finish()
+                            Toast.makeText( applicationContext, myApplication.user?.id.toString(), Toast.LENGTH_LONG ).show()
+                            //Toast.makeText( applicationContext, R.string.success, Toast.LENGTH_SHORT  ).show()
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Toast.makeText( this@LoginActivity, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
             }
         }
 
