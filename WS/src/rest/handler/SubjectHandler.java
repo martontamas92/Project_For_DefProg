@@ -14,6 +14,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 
@@ -21,6 +22,7 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import business_model.ErrorMessage;
 import business_model.Name;
 
 import javax.ws.rs.core.MediaType;
@@ -39,7 +41,6 @@ public class SubjectHandler {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/registrate")
-
 	public Response registrate(String data) {
 
 		try {
@@ -57,6 +58,7 @@ public class SubjectHandler {
 
 
 	}
+	/*
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/test")
@@ -66,9 +68,8 @@ public class SubjectHandler {
 		Subject s = new Subject("proba", d);
 		return s;
 	}
-
+	*/
 	@POST
-
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/create-lecture")
@@ -76,9 +77,7 @@ public class SubjectHandler {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 //			Demonstrator d;
-
-
-			//Date date ;
+//			Date date ;
 			Subject s = mapper.readValue(data, Subject.class);
 //			String subjectName = mapper.readValue(data, String.class);
 //			Subject s = new Subject(subjectName, d);
@@ -98,17 +97,17 @@ public class SubjectHandler {
 
 	}
 
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
+	@GET
+//	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/demonstrator-subjectList")
-	public ArrayList<String> getSubjects(String data){
+	@Path("/demonstrator-subjectList") //
+	public ArrayList<HashMap<String,String>> getSubjects(@QueryParam("id") Integer id){
 		try {
-			ObjectMapper mapper = new ObjectMapper();
-			 Map<String, Integer> map =
-				        mapper.readValue(data, TypeFactory.defaultInstance()
-				                         .constructMapType(HashMap.class, String.class, Integer.class));
-			Integer id = map.get("id");
+//			ObjectMapper mapper = new ObjectMapper();
+//			 Map<String, Integer> map =
+//				        mapper.readValue(data, TypeFactory.defaultInstance()
+//				                         .constructMapType(HashMap.class, String.class, Integer.class));
+//			Integer id = map.get("id");
 			return subjectRepository.allSubjectByDeId(id);
 
 		}catch (Exception e) {
@@ -126,16 +125,55 @@ public class SubjectHandler {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/attend")
 	public Response attendLecture(String data) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			 Map<String, Integer> map1 =
+				        mapper.readValue(data, TypeFactory.defaultInstance()
+				                         .constructMapType(HashMap.class, String.class, Integer.class));
+			Integer st_id = map1.get("st_id");
+			 Map<String, Integer> map2 =
+				        mapper.readValue(data, TypeFactory.defaultInstance()
+				                         .constructMapType(HashMap.class, String.class, Integer.class));
+			Integer sj_id = map2.get("sj_id");
+			int a = subjectRepository.attendLecture(st_id, sj_id);
 
-
+			return Response.status(200).entity("Sikeres! " + a).build();
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 		return Response.status(200).entity("").build();
 	}
 
-	@POST
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@GET
+	//@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/student-subjectList")
-	public Response getStudentSubject(@FormParam("id") Integer id){
+	public Response getStudentSubject(@QueryParam("id") Integer id){
 		return Response.status(200).entity(subjectRepository.allSubjectByStId(id)).build();
+	}
+
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/presence-list")
+	public Response attendOnClass(String data) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			Map<String, Integer> map1 =
+			        mapper.readValue(data, TypeFactory.defaultInstance()
+			                         .constructMapType(HashMap.class, String.class, Integer.class));
+		Integer st_id = map1.get("st_id");
+		 Map<String, Integer> map2 =
+			        mapper.readValue(data, TypeFactory.defaultInstance()
+			                         .constructMapType(HashMap.class, String.class, Integer.class));
+		Integer le_id = map2.get("le_id");
+		int a = subjectRepository.attendOnClass(st_id,le_id);
+		return Response.status(200).entity(new ErrorMessage("Jelentkezes sikeres!")).build();
+
+		}catch (Exception e) {
+			// TODO: handle exception
+			return Response.status(400).entity(new ErrorMessage(e.getMessage())).build();
+		}
+
 	}
 }
