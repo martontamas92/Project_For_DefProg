@@ -32,7 +32,9 @@ public class SubjectController implements ISubject {
 			String sql = "INSERT INTO subject_sj(sj_d_id, sj_name) " + "VALUES(?,?)";
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-			String id = dm.demonstratorByName(s.getDemonstrator().getName()).toString();
+//			String id = dm.demonstratorByName(s.getDemonstrator().getName()).toString();
+			String id = s.getDemonstrator().getId().toString();
+			System.out.println(id);
 			pstmt.setString(1, id); // need to get id from demonstrator table;
 			pstmt.setString(2, s.getSubjectName());
 			int rowAffected = pstmt.executeUpdate();
