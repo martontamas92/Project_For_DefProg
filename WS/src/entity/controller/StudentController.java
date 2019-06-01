@@ -33,14 +33,14 @@ public class StudentController {
         int candidateId = 0;
 
 		try {
-			String sql = "INSERT INTO student_st(st_fn,st_mn,st_ln,st_neptun) "
-		            + "VALUES(?,?,?,?)";
+			String sql = "INSERT INTO student_st(st_fn,st_ln,st_neptun) "
+		            + "VALUES(?,?,?)";
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, s.getName().getFirstName());
-			pstmt.setString(2, s.getName().getMiddleName());
-			pstmt.setString(3, s.getName().getLastName());
-			pstmt.setString(4, s.getNeptun().getNeptun());
+			//pstmt.setString(2, s.getName().getMiddleName());
+			pstmt.setString(2, s.getName().getLastName());
+			pstmt.setString(3, s.getNeptun().getNeptun());
 			 int rowAffected = pstmt.executeUpdate();
 	            if(rowAffected == 1)
 	            {
@@ -68,7 +68,7 @@ public class StudentController {
 			pstmt.setInt(1, id);
 			ResultSet rs = pstmt.executeQuery();
 			rs.next();
-				Name name = Name.NameBuilder(rs.getString("st_fn"), rs.getString("st_mn"), rs.getString("st_ln"));
+				Name name = Name.NameBuilder(rs.getString("st_fn"), rs.getString("st_ln"));
 				Neptun_Code nept = Neptun_Code.buildNeptun_Code(rs.getString("st_neptun"));
 				Student st =Student.studentBuilder(name, nept);
 				st.setId(id);
@@ -89,7 +89,7 @@ public class StudentController {
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Name name = Name.NameBuilder(rs.getString("st_fn"), rs.getString("st_mn"), rs.getString("st_ln"));
+				Name name = Name.NameBuilder(rs.getString("st_fn"), rs.getString("st_ln"));
 				Neptun_Code neptun = Neptun_Code.buildNeptun_Code(rs.getString("st_neptun"));
 				Student s = Student.studentBuilder(name, neptun);
 				students.add(s);

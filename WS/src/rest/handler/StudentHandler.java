@@ -47,7 +47,7 @@ public class StudentHandler {
 			System.out.println(data);
 			JSONObject json = new JSONObject(data);
 			String firstName = json.getJSONObject("Name").getString("firstName");
-			String middleName = json.getJSONObject("Name").getString("middleName");
+		//	String middleName = json.getJSONObject("Name").getString("middleName");
 			String lastName = json.getJSONObject("Name").getString("lastName");
 			String neptun = json.getJSONObject("Neptun").getString("neptun");
 			String passwd = json.getJSONObject("Auth").getString("passwd");
@@ -59,7 +59,7 @@ public class StudentHandler {
 			System.out.println("ln: " + lastName);
 			System.out.println("nept: " + neptun);
 			*/
-			Name name = Name.NameBuilder(firstName, middleName, lastName);
+			Name name = Name.NameBuilder(firstName, lastName);
 			Neptun_Code nept = Neptun_Code.buildNeptun_Code(neptun);
 			UserName userName = UserName.userNameBuilder(uname);
 			Password password = Password.passwordBuilder(passwd);
@@ -95,11 +95,11 @@ public class StudentHandler {
 	@Path("/test")
 	public Student getStudentRecord(){
         String fn = "veztek";
-        String mn = "kozep";
+        //String mn = "kozep";
         String ln = "uto";
         String nept = "ITXDJ8";
 
-        Name n = Name.NameBuilder(fn, mn, ln);
+        Name n = Name.NameBuilder(fn, ln);
         Neptun_Code neptun = Neptun_Code.buildNeptun_Code(nept);
 
         Student st = Student.studentBuilder(n, neptun);
