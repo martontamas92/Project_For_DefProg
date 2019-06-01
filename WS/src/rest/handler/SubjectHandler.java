@@ -17,7 +17,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -96,10 +96,10 @@ public class SubjectHandler {
 		}
 
 	}
-
+	//@CrossOrigin(origins = "http://localhost:8080")
 	@GET
 //	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XHTML_XML})
 	@Path("/demonstrator-subjectList") //
 	public ArrayList<HashMap<String,String>> getSubjects(@QueryParam("id") Integer id){
 		try {
