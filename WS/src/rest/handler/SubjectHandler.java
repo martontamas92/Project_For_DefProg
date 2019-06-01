@@ -85,10 +85,10 @@ public class SubjectHandler {
 			//date = mapper.readValue(data, Date.class);
 			Lecture l = new Lecture(LocalDate.now(), s);
 			int a = subjectRepository.createLecture(l);
-			String url = "";
+			String url = "ASDASDASD";
 
 			// have to insert record to database;
-			return Response.status(200).entity("Sikeres letrehozas!" + a).build();
+			return Response.status(200).entity("\"" + url + "\"").build();
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
