@@ -33,13 +33,13 @@ public class DemonstratorHandler {
 			//System.out.println(data);
 			JSONObject json = new JSONObject(data);
 			 String firstName = json.getJSONObject("Name").getString("firstName");
-			 String middleName = json.getJSONObject("Name").getString("middleName");
+			 //String middleName = json.getJSONObject("Name").getString("middleName");
 			 String lastName = json.getJSONObject("Name").getString("lastName");
 
 			 String passwd = json.getJSONObject("Auth").getString("passwd");
 			 String uname = json.getJSONObject("Auth").getString("uname");
 
-			 Name n = Name.NameBuilder(firstName, middleName, lastName);
+			 Name n = Name.NameBuilder(firstName, lastName);
 			 Demonstrator d = new Demonstrator(n);
 			 UserName userName = UserName.userNameBuilder(uname);
 			 Password password = Password.passwordBuilder(passwd);
@@ -66,10 +66,10 @@ public class DemonstratorHandler {
 	@Path("/test")
 	public Demonstrator test() {
 		String fn = "veztek";
-        String mn = "kozep";
+        //String mn = "kozep";
         String ln = "uto";
 
-        Name n = Name.NameBuilder(fn, mn, ln);
+        Name n = Name.NameBuilder(fn, ln);
         Demonstrator d = new Demonstrator(n);
         return d;
 	}

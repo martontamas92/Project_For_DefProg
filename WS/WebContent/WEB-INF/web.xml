@@ -49,10 +49,13 @@
     <param-value>rest.handler.CORSFilter</param-value>
  </init-param>
 
+
     <load-on-startup>1</load-on-startup>
   </servlet>
+
   <servlet-mapping>
     <servlet-name>Jersey Web Application</servlet-name>
     <url-pattern>/home/*</url-pattern>
   </servlet-mapping>
+
 </web-app>

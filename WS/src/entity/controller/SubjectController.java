@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,8 +13,10 @@ import javax.validation.constraints.AssertFalse.List;
 
 import com.mysql.cj.protocol.ResultListener;
 
+import business_model.Name;
 import entity.interfaces.DBconnection;
 import entity.interfaces.ISubject;
+import model.Demonstrator;
 import model.Lecture;
 import model.Subject;
 
@@ -29,7 +32,9 @@ public class SubjectController implements ISubject {
 			String sql = "INSERT INTO subject_sj(sj_d_id, sj_name) " + "VALUES(?,?)";
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-			String id = dm.demonstratorByName(s.getDemonstrator().getName()).toString();
+//			String id = dm.demonstratorByName(s.getDemonstrator().getName()).toString();
+			String id = s.getDemonstrator().getId().toString();
+			System.out.println(id);
 			pstmt.setString(1, id); // need to get id from demonstrator table;
 			pstmt.setString(2, s.getSubjectName());
 			int rowAffected = pstmt.executeUpdate();
@@ -77,17 +82,19 @@ public class SubjectController implements ISubject {
 		return null;
 	}
 
-	public ArrayList<String> allSubjectByDeId(Integer id){
+	public ArrayList<HashMap<String,String>> allSubjectByDeId(Integer id){
 		try {
-			ArrayList<String>resultList = new ArrayList<>();
+			ArrayList<HashMap<String,String>>resultList = new ArrayList<>();
 			String sql = "SELECT * FROM subject_sj where sj_d_id = ?";
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, id);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				//Subject s = new Subject(subjectName, demonstrator);
-				resultList.add(rs.getString("sj_name"));
+				HashMap<String,String> hs = new HashMap<>();
+				hs.put("value", rs.getString("sj_name"));
+				hs.put("label", rs.getString("sj_name"));
+				resultList.add(hs);
 			}
 			return resultList;
 		}catch (Exception e) {
@@ -128,6 +135,30 @@ public class SubjectController implements ISubject {
 
 		return subjectId;
 
+	}
+
+	public int attendLecture(Integer st_id, Integer sj_id) {
+		ResultSet rs;
+		int subjectId = 0;
+		try {
+			String sql = "INSERT INTO sj_st_attend_at(at_st_id,at_sj_id)" + "VALUES(?,?)";
+			conn = DBconnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+			pstmt.setInt(1, st_id);
+			pstmt.setInt(2, sj_id);
+			int rowAffected = pstmt.executeUpdate();
+            if(rowAffected == 1)
+            {
+                // get candidate id
+                rs = pstmt.getGeneratedKeys();
+                if(rs.next())
+                    subjectId = rs.getInt(1);
+
+            }
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		return subjectId;
 	}
 
 	public ArrayList<HashMap<String,String>> allSubjectByStId(Integer id){
@@ -173,6 +204,32 @@ public class SubjectController implements ISubject {
 	public void addSubjects(Subject[] ss) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public Integer attendOnClass(Integer st_id, Integer le_id) {
+		ResultSet rs;
+		int subjectId = 0;
+		try {
+			String sql = "INSERT INTO presence_pe(pe_st_id,pe_le_id)"+ "VALUES(?,?)";
+			conn = DBconnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, st_id);
+			pstmt.setInt(2, le_id);
+			//pstmt.setString(3, LocalDateTime.now().toString());
+			int rowAffected = pstmt.executeUpdate();
+            if(rowAffected == 1)
+            {
+                // get candidate id
+                rs = pstmt.getGeneratedKeys();
+                if(rs.next())
+                    subjectId = rs.getInt(1);
+
+            }
+		}catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return subjectId;
 	}
 
 }

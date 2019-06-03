@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS de_auth_a(
 CREATE TABLE IF NOT EXISTS subject_sj(
     sj_id int AUTO_INCREMENT,
     sj_name VARCHAR(255) NOT NULL,
+    sj_department VARCHAR(255) NOT NULL,
     sj_d_id int NOT NULL,
     PRIMARY KEY(sj_id),
     FOREIGN KEY (sj_d_id) REFERENCES demonstrator_de(de_id)
@@ -65,3 +66,13 @@ CREATE TABLE IF NOT EXISTS lecture_le(
     PRIMARY KEY(le_id),
     FOREIGN KEY (le_sj_id) REFERENCES subject_sj(sj_id)
 ) ENGINE=INNODB;
+
+CREATE TABLE IF NOT EXISTS presence_pe(
+    pe_id int AUTO_INCREMENT,
+    pe_le_id int NOT NULL,
+    pe_st_id int NOT NULL,
+    pe_timestamp TIMESTAMP NOT NULL,
+    PRIMARY KEY (pe_id),
+    FOREIGN KEY(pe_le_id) REFERENCES lecture_le(le_id),
+    FOREIGN KEY(pe_st_id) REFERENCES student_st(st_id)
+) ENGINE = INNODB;

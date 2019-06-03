@@ -21,13 +21,13 @@ public class DemonstratorController implements IDemonstrator {
         int candidateId = 0;
 
 		try {
-			String sql = "INSERT INTO demonstrator_de(de_fn,de_mn,de_ln) "
-		            + "VALUES(?,?,?)";
+			String sql = "INSERT INTO demonstrator_de(de_fn,de_ln) "
+		            + "VALUES(?,?)";
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, d.getName().getFirstName());
-			pstmt.setString(2, d.getName().getMiddleName());
-			pstmt.setString(3, d.getName().getLastName());
+			//pstmt.setString(2, d.getName().getMiddleName());
+			pstmt.setString(2, d.getName().getLastName());
 
 			 int rowAffected = pstmt.executeUpdate();
 	            if(rowAffected == 1)
@@ -57,7 +57,7 @@ public class DemonstratorController implements IDemonstrator {
 			pstmt.setInt(1, id);
 			ResultSet rs = pstmt.executeQuery();
 			rs.next();
-				Name name = Name.NameBuilder(rs.getString("de_fn"), rs.getString("de_mn"), rs.getString("de_ln"));
+				Name name = Name.NameBuilder(rs.getString("de_fn"), rs.getString("de_ln"));
 				Demonstrator d =new Demonstrator(name);
 				d.setId(id);
 
@@ -77,7 +77,7 @@ public class DemonstratorController implements IDemonstrator {
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				Name name = Name.NameBuilder(rs.getString("de_fn"), rs.getString("de_mn"), rs.getString("de_ln"));
+				Name name = Name.NameBuilder(rs.getString("de_fn"), rs.getString("de_ln"));
 				Demonstrator d =new Demonstrator(name);
 				demonstrators.add(d);
 			}
@@ -91,13 +91,13 @@ public class DemonstratorController implements IDemonstrator {
 	public Integer demonstratorByName(Name n) {
 		try {
 			System.out.println(n.toString());
-			String sql = "Select de_id From demonstrator_de where de_fn like ? and de_mn like ? and de_ln like ?";
+			String sql = "Select de_id From demonstrator_de where de_fn like ? and de_ln like ?";
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 
 			pstmt.setString(1, n.getFirstName());
-			pstmt.setString(2, n.getMiddleName());
-			pstmt.setString(3, n.getLastName());
+//			pstmt.setString(2, n.getMiddleName());
+			pstmt.setString(2, n.getLastName());
 
 			System.out.println(pstmt.toString());
 			ResultSet rs  = pstmt.executeQuery();
