@@ -1,6 +1,7 @@
 package com.example.qrcodescanner.models
 
 import org.json.JSONObject
+import java.lang.Exception
 
 class Subject
 {
@@ -10,11 +11,27 @@ class Subject
 
     constructor(){}
 
+    constructor( result: String )
+    {
+        try
+        {
+            val jsonObject  = JSONObject( result )
+            this.id         = jsonObject.getInt( "id" )
+            this.name       = jsonObject.getString( "name" )
+            this.teacher    = jsonObject.getString( "teacher" )
+        }
+        catch ( e: Exception){}
+    }
+
     constructor( jsonObject: JSONObject )
     {
-        this.id         = jsonObject.getInt( "id" )
-        this.name       = jsonObject.getString( "name" )
-        this.teacher    = jsonObject.getString( "teacher" )
+        try
+        {
+            this.id         = jsonObject.getInt( "id" )
+            this.name       = jsonObject.getString( "subjectName" )
+            this.teacher    = jsonObject.getString( "name" )
+        }
+        catch ( e: Exception){}
     }
 
     constructor( id: Int, name: String, teacher: String )

@@ -1,6 +1,5 @@
 package com.example.qrcodescanner.activities
 
-import android.app.Application
 import android.content.Intent
 import android.content.res.Configuration
 import android.support.v7.app.AppCompatActivity
@@ -10,19 +9,21 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.Toolbar
+import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.android.synthetic.main.nav_header_main.*
+import android.os.Build
+import com.example.qrcodescanner.MyApplication
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener
 {
     private lateinit var drawer: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
-    private var myApplication  = MyApplication()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -102,6 +103,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    override fun onPrepareOptionsMenu( menu: Menu ): Boolean
+    {
+        /*
+        if( MyApplication.instance.isLoggedIn )
+        {
+            menu.findItem( R.id.login ).isVisible       = false
+            menu.findItem( R.id.register ).isVisible    = false
+            menu.findItem( R.id.logout ).isVisible      = true
+            menu.findItem( R.id.qr_code ).isVisible     = true
+            menu.findItem( R.id.my_subject ).isVisible  = true
+            menu.findItem( R.id.subject ).isVisible     = true
+        }
+        else
+        {
+            menu.findItem( R.id.login ).isVisible       = true
+            menu.findItem( R.id.register ).isVisible    = true
+            menu.findItem( R.id.logout ).isVisible      = false
+            menu.findItem( R.id.qr_code ).isVisible     = false
+            menu.findItem( R.id.my_subject ).isVisible  = false
+            menu.findItem( R.id.subject ).isVisible     = false
+        }*/
+
+        return super.onPrepareOptionsMenu( menu )
+    }
+
     override fun onBackPressed()
     {
         if ( drawer.isDrawerOpen( GravityCompat.START ) )
@@ -164,7 +190,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             else
             {
                 Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
-                //link.text = result.contents
             }
         }
         else
@@ -176,10 +201,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onResume()
     {
         super.onResume()
-
-        //val user = myApplication.user
-
-        //username.text = user?.firstName + " " + user?.lastName
-
     }
 }
