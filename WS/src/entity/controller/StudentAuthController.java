@@ -11,6 +11,7 @@ import model.Auth;
 
 public class StudentAuthController implements IAuth {
 	private Connection conn;
+
 	@Override
 	public boolean add(Auth a) {
 		try {
@@ -21,34 +22,36 @@ public class StudentAuthController implements IAuth {
 			pstmt.setString(2, a.getUname().getUname());
 			pstmt.setString(3, a.getPasswd().getPasswd());
 			int rowAffected = pstmt.executeUpdate();
-			if(rowAffected != 1) {return false;}
+			if (rowAffected != 1) {
+				return false;
+			}
 			return true;
 
-		}catch (Exception e) {
+		} catch (Exception e) {
 
 			System.out.println(e.getMessage());
 			return false;
 		}
-
 
 	}
 
 	@Override
 	public boolean userNameExists(String username) {
 		try {
-		String sql = "SELECT * FROM st_auth_a " + "WHERE a_un = ?" ;
-		conn = DBconnection.getConnection();
-		PreparedStatement pstmt = conn.prepareStatement(sql);
+			String sql = "SELECT * FROM st_auth_a " + "WHERE a_un = ?";
+			conn = DBconnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
 
-		pstmt.setString(1, username);
-		ResultSet rs  = pstmt.executeQuery();
-		if(rs.next()) {return true;}
-		return false;
-		}catch (Exception e) {
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
 			System.out.println("uname exists: " + e.getMessage());
 			return false;
 		}
-
 
 	}
 
@@ -56,19 +59,21 @@ public class StudentAuthController implements IAuth {
 	public boolean valid(String username, String passwd) {
 		try {
 			if (userNameExists(username)) {
-				String sql = "SELECT * FROM st_auth_a WHERE a_un like \"" + username + "\"";
+				String sql = "SELECT * FROM st_auth_a WHERE a_un like \"" + username + "\""; // rain check
 				conn = DBconnection.getConnection();
 				PreparedStatement pstmt = conn.prepareStatement(sql);
-				//pstmt.setString(1, username);
+				// pstmt.setString(1, username);
 
 				ResultSet rs = pstmt.executeQuery();
 				rs.next();
 				System.out.println(rs.getString("a_pwd"));
-				if(rs.getString("a_pwd").equals(passwd)) {return true;}
+				if (rs.getString("a_pwd").equals(passwd)) {
+					return true;
+				}
 				return false;
 			}
 			return false;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println(e.getMessage());
 			return false;
@@ -79,21 +84,19 @@ public class StudentAuthController implements IAuth {
 
 	public int getStudentId(String username) {
 		try {
-			String sql = "SELECT a_st_id FROM st_auth_a WHERE a_un like \"" + username + "\"";
+			String sql = "SELECT a_st_id FROM st_auth_a WHERE a_un like \"" + username + "\""; // rain check
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql);
-			//pstmt.setString(1, username);
+			// pstmt.setString(1, username);
 
 			ResultSet rs = pstmt.executeQuery();
 			rs.next();
 			System.out.println(rs.getString(("a_st_id").toString()));
 			return rs.getInt("a_st_id");
-		}catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println("st valid:" + e.getMessage());
 			return 0;
 		}
-
-
 
 	}
 

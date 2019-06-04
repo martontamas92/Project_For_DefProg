@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS de_auth_a(
 CREATE TABLE IF NOT EXISTS subject_sj(
     sj_id int AUTO_INCREMENT,
     sj_name VARCHAR(255) NOT NULL,
-    sj_department VARCHAR(255) NOT NULL,
+    sj_major VARCHAR(255) NOT NULL,
     sj_d_id int NOT NULL,
     PRIMARY KEY(sj_id),
     FOREIGN KEY (sj_d_id) REFERENCES demonstrator_de(de_id)
