@@ -16,6 +16,7 @@ public class Auth {
 	 * */
 
 
+	private Auth() {}
 
 	public Auth(@NotNull Integer id, @NotNull UserName uname, @NotNull Password passwd) {
 		super();
@@ -24,6 +25,12 @@ public class Auth {
 		this.passwd = passwd;
 	}
 
+	public Auth( @NotNull UserName uname, @NotNull Password passwd) {
+		super();
+
+		this.uname = uname;
+		this.passwd = passwd;
+	}
 
 	public Integer getId() {
 		return id;

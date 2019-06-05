@@ -1,6 +1,7 @@
 package rest.handler;
 
 import java.security.Key;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import business_model.Message;
 import business_model.Password;
 import business_model.UserName;
 import entity.controller.DemonstratorAuthController;
@@ -46,7 +48,10 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 @Transactional
 
 public class LoginHandler {
-
+	private StudentAuthController studentAuthRepository = new StudentAuthController();
+	private DemonstratorAuthController demonstratorAuthRepository = new DemonstratorAuthController();
+	private StudentController studentRepository = new StudentController();
+	private DemonstratorController demonstratorRepository = new DemonstratorController();
 
 	//private Logger logger;
 
@@ -58,10 +63,7 @@ public class LoginHandler {
 
 	public Response authenticateUser(@FormParam("uname") String username,@FormParam("passwd") String password, @FormParam("status") String status) {
 
-		StudentAuthController studentAuthRepository = new StudentAuthController();
-		DemonstratorAuthController demonstratorAuthRepository = new DemonstratorAuthController();
-		StudentController studentRepository = new StudentController();
-		DemonstratorController demonstratorRepository = new DemonstratorController();
+
 		try {
 			UserName uname = UserName.userNameBuilder(username);
 			Password passwd = Password.passwordBuilder(password);
@@ -88,10 +90,10 @@ public class LoginHandler {
 				Demonstrator d = demonstratorRepository.findDemonstrator(id);
 				return Response.ok().header(AUTHORIZATION, "Bearer " + token).entity(d).build();
 			}
-			return Response.status(UNAUTHORIZED).build();
+			return Response.status(UNAUTHORIZED).entity(new Message("Autentikációs hiba történt!")).build();
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
-			return Response.status(UNAUTHORIZED).build();
+			return Response.status(UNAUTHORIZED).entity(new Message("Autentikációs hiba történt!")).build();
 		}
 
 
@@ -109,7 +111,7 @@ public class LoginHandler {
 		return false;
 	}
 
-	private boolean authenticateDemonstrator(UserName username, Password password) {
+	private boolean authenticateDemonstrator(UserName username, Password password) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
 		DemonstratorAuthController demonstratorRepository = new DemonstratorAuthController();
 		if(demonstratorRepository.valid(username.getUname(),password.getPasswd())) {

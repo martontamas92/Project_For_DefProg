@@ -3,6 +3,7 @@ package entity.controller;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -16,11 +17,11 @@ import model.Demonstrator;
 public class DemonstratorController implements IDemonstrator {
 	private Connection conn;
 	@Override
-	public int addDemonstrator(Demonstrator d) {
+	public int addDemonstrator(Demonstrator d) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		ResultSet rs = null;
         int candidateId = 0;
 
-		try {
+
 			String sql = "INSERT INTO demonstrator_de(de_fn,de_ln) "
 		            + "VALUES(?,?)";
 			conn = DBconnection.getConnection();
@@ -39,39 +40,32 @@ public class DemonstratorController implements IDemonstrator {
 
 	            }
 
-		}catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
 
 		return candidateId;
 
 	}
 
 	@Override
-	public Demonstrator findDemonstrator(Integer id) {
+	public Demonstrator findDemonstrator(Integer id) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 
-		try {
+
 			String sql = "Select * from demonstrator_de where de_id = ?";
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, id);
 			ResultSet rs = pstmt.executeQuery();
 			rs.next();
-				Name name = Name.NameBuilder(rs.getString("de_fn"), rs.getString("de_ln"));
-				Demonstrator d =new Demonstrator(name);
-				d.setId(id);
-
+			Name name = Name.NameBuilder(rs.getString("de_fn"), rs.getString("de_ln"));
+			Demonstrator d =new Demonstrator(name);
+			d.setId(id);
 			return d;
-		}catch(Exception e ) {
-			System.out.println(e.getMessage());
-			return null;
-		}
+
 	}
 
 	@Override
-	public ArrayList<Demonstrator> allDemonstrator() {
+	public ArrayList<Demonstrator> allDemonstrator() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		ArrayList<Demonstrator> demonstrators = new ArrayList<>();
-		try {
+
 			String sql = "Select * from demonstrator_de";
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -82,14 +76,12 @@ public class DemonstratorController implements IDemonstrator {
 				demonstrators.add(d);
 			}
 			return demonstrators;
-		}catch(Exception e ) {
-			System.out.println(e.getMessage());
-			return demonstrators;
-		}
+
 
 	}
-	public Integer demonstratorByName(Name n) {
-		try {
+	@Override
+	public Integer demonstratorByName(Name n) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+
 			System.out.println(n.toString());
 			String sql = "Select de_id From demonstrator_de where de_fn like ? and de_ln like ?";
 			conn = DBconnection.getConnection();
@@ -104,10 +96,7 @@ public class DemonstratorController implements IDemonstrator {
 			rs.next();
 			System.out.println(rs.getInt("de_id"));
 			return rs.getInt("de_id");
-		}catch (Exception e) {
-			System.out.println(e.getMessage());
-			return 0;
-		}
+
 
 
 	}

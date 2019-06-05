@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class Neptun_Code {
 	private String neptun;
-
+	private Neptun_Code() {}
 	private Neptun_Code(String neptun) {
 		//super();
 		if(canBuild(neptun)) {

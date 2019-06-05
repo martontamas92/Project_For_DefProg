@@ -24,6 +24,7 @@ public class Student extends User implements Serializable{
 	@Column(name="st_name")
 	private Name name;
 
+	private Student() {}
 	public Integer getId() {
 		return id;
 	}

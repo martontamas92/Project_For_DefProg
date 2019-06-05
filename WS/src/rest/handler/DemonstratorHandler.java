@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
 
+import business_model.Message;
 import business_model.Name;
 import business_model.Password;
 import business_model.UserName;
@@ -22,18 +23,19 @@ import model.Demonstrator;
 
 @Path("/demonstrator")
 public class DemonstratorHandler {
+
 	private DemonstratorAuthController authRepository = new DemonstratorAuthController();
 	private DemonstratorController demRepository = new DemonstratorController();
+
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/registrate")
 	public Response registrate(String data) {
 		try {
-			//System.out.println(data);
-			JSONObject json = new JSONObject(data);
+
+			 JSONObject json = new JSONObject(data);
 			 String firstName = json.getJSONObject("Name").getString("firstName");
-			 //String middleName = json.getJSONObject("Name").getString("middleName");
 			 String lastName = json.getJSONObject("Name").getString("lastName");
 
 			 String passwd = json.getJSONObject("Auth").getString("passwd");
@@ -43,11 +45,10 @@ public class DemonstratorHandler {
 			 Demonstrator d = new Demonstrator(n);
 			 UserName userName = UserName.userNameBuilder(uname);
 			 Password password = Password.passwordBuilder(passwd);
-			 //System.out.println(uname);
 
 			 ArrayList<Demonstrator> ds = demRepository.allDemonstrator();
-			 if(ds.contains(d)) {return Response.status(200).entity("{ \"message\": \"Demonstrator Already exists!\"}").build();}
-			 if(authRepository.userNameExists(uname)) {return Response.status(200).entity("{ \"message\": \" Username Already exists!\"}").build();}
+			 if(ds.contains(d)) {return Response.status(403).entity(new Message("Ez a tanár már regisztrált").toString()).build();}
+			 if(authRepository.userNameExists(uname)) {return Response.status(403).entity(new Message("Ezt a felhasználónevet már regisztrálták").toString()).build();}
 			 int a = demRepository.addDemonstrator(d);
 			 Auth auth = new Auth(a, userName, password);
 			 if(!authRepository.add(auth)) {return Response.status(500).entity("Registration failed").build();}
@@ -55,24 +56,10 @@ public class DemonstratorHandler {
 			 return Response.status(201).entity(d).build();
 		}catch (Exception e) {
 			System.out.println(e.getMessage());
-			return Response.status(500).entity(data + "\n" + e.getMessage()).build();
+			return Response.status(500).entity(new Message("A regisztráció nem sikerült").toString()).build();
 		}
 
 
 	}
-
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/test")
-	public Demonstrator test() {
-		String fn = "veztek";
-        //String mn = "kozep";
-        String ln = "uto";
-
-        Name n = Name.NameBuilder(fn, ln);
-        Demonstrator d = new Demonstrator(n);
-        return d;
-	}
-
 
 }
