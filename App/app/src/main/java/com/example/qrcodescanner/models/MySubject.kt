@@ -1,24 +1,34 @@
 package com.example.qrcodescanner.models
 
+import android.util.Log
 import org.json.JSONObject
+import java.lang.Exception
 
 class MySubject
 {
-    var id: Int?             = null
     var name: String?        = null
     var teacher: String?     = null
     var totalPresence: Int?  = null
     var myPresence: Int?     = null
 
-    constructor(){}
+    constructor()
 
     constructor( jsonObject: JSONObject)
     {
-
+        try
+        {
+            this.name           = jsonObject.getString( "subjectName" )
+            this.teacher        = jsonObject.getString( "name" )
+            this.totalPresence  = jsonObject.getInt( "totalPresence" )
+            this.myPresence     = jsonObject.getInt( "myPresence" )
+        }
+        catch ( e: Exception)
+        {
+            Log.e( "my_subject_model_error", e.message)
+        }
     }
-    constructor( id: Int, name: String, teacher: String, totalPresence: Int, myPresence: Int )
+    constructor( name: String, teacher: String, totalPresence: Int, myPresence: Int )
     {
-        this.id             = id
         this.name           = name
         this.teacher        = teacher
         this.totalPresence  = totalPresence

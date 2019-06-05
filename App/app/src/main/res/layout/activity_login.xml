@@ -18,7 +18,6 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/colorGreen"
                 app:layout_scrollFlags="scroll|enterAlways"/>
-
     </android.support.design.widget.AppBarLayout>
 
     <ProgressBar
@@ -55,7 +54,6 @@
                         android:inputType="textEmailAddress"
                         android:maxLines="1"
                         android:singleLine="true"/>
-
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -75,7 +73,6 @@
                         android:inputType="textPassword"
                         android:maxLines="1"
                         android:singleLine="true"/>
-
             </android.support.design.widget.TextInputLayout>
 
             <Button
@@ -89,7 +86,6 @@
                     android:paddingStart="50dp"
                     android:text="@string/action_sign_in"
                     android:textStyle="bold"/>
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

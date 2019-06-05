@@ -18,7 +18,6 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/colorGreen"
                 app:layout_scrollFlags="scroll|enterAlways"/>
-
     </android.support.design.widget.AppBarLayout>
 
     <ProgressBar
@@ -31,7 +30,6 @@
             android:layout_gravity="center"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/swipe_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -43,11 +41,8 @@
                 <android.support.v7.widget.RecyclerView
                         android:id="@+id/recyclerView"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_margin="5dp" />
-
         </ScrollView>
-
     </android.support.v4.widget.SwipeRefreshLayout>
-
 </LinearLayout>

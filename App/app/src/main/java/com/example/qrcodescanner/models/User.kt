@@ -13,7 +13,7 @@ class User
     var neptun: String?     = null
     var username: String?   = null
 
-    constructor(){}
+    constructor()
 
     constructor( result: String )
     {
@@ -29,7 +29,7 @@ class User
         }
         catch ( e: Exception )
         {
-            Log.e( "error_user_model", "Error in user model" )
+            Log.e( "user_model_error", e.message )
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.qrcodescanner.models
 
+import android.util.Log
 import org.json.JSONObject
 import java.lang.Exception
 
@@ -9,7 +10,7 @@ class Subject
     var name: String?    = null
     var teacher: String? = null
 
-    constructor(){}
+    constructor()
 
     constructor( result: String )
     {
@@ -31,7 +32,10 @@ class Subject
             this.name       = jsonObject.getString( "subjectName" )
             this.teacher    = jsonObject.getString( "name" )
         }
-        catch ( e: Exception){}
+        catch ( e: Exception)
+        {
+            Log.e( "subject_model_error", e.message)
+        }
     }
 
     constructor( id: Int, name: String, teacher: String )

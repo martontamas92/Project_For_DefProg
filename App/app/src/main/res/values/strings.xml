@@ -35,6 +35,7 @@
     <string name="error_invalid_neptun_code">A neptunkód túl rövid</string>
     <string name="error_incorrect_password">A jelszó helytelen</string>
     <string name="error_field_required">Ez a mező kötelező</string>
-    <string name="error_registration">Hiba regisztrációban</string>
+    <string name="error_registration">Hiba a regisztrációban</string>
+    <string name="error_login">Hiba a bejelentkezésben</string>
     <string name="success">Sikeres</string>
 </resources>

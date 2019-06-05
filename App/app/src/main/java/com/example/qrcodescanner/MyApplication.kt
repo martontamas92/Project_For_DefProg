@@ -21,6 +21,7 @@ class MyApplication : Application()
         val LOGIN               = "authentication/login"
         val SUBJECTSGETTER      = "subject/student-subjectList"
         val SUBJECTATTEND       = "subject/attend"
+        val MYSUBJECTSGETTER    = "subject/presence-list"
         lateinit var instance   : MyApplication
             private set
     }

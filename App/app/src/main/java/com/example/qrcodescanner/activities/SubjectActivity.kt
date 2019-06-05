@@ -93,66 +93,66 @@ class SubjectActivity : AppCompatActivity()
         {
             subjectsGetterTask = null
 
-            if ( success!! )
+            if( !success!! )
             {
-                doAsync{
-                    val client          = OkHttpClient()
-                    val url             = URL(
-                            MyApplication.URL +
-                                MyApplication.SUBJECTSGETTER +
-                                "?id=" + MyApplication.instance.user.id
-                    )
+                Toast.makeText( this@SubjectActivity, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
 
-                    Log.i( "response", MyApplication.URL +
+                progress_bar.visibility = View.GONE
+
+                return
+            }
+
+            doAsync{
+                val client          = OkHttpClient()
+                val url             = URL(
+                        MyApplication.URL +
                             MyApplication.SUBJECTSGETTER +
-                            "?id=" +
-                            MyApplication.instance.user.id )
+                            "?id=" + MyApplication.instance.user.id
+                )
 
-                    val request = Request.Builder()
-                        //.addHeader("Authorization", "Bearer $token")
-                        .url( url)
-                        .build()
+                Log.i( "response", MyApplication.URL +
+                        MyApplication.SUBJECTSGETTER +
+                        "?id=" +
+                        MyApplication.instance.user.id )
 
-                    val response = client.newCall( request ).execute()
+                val request = Request.Builder()
+                    //.addHeader("Authorization", "Bearer $token")
+                    .url( url)
+                    .build()
 
-                    uiThread{
-                        Log.i( "response", response.isSuccessful.toString() )
+                val response = client.newCall( request ).execute()
 
-                        if( !response.isSuccessful )
+                uiThread{
+                    Log.i( "response", response.isSuccessful.toString() )
+
+                    if( !response.isSuccessful )
+                    {
+                        Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+
+                        return@uiThread
+                    }
+                    else
+                    {
+                        val jsonData = response.body()!!.string()
+                        Log.i( "response", jsonData )
+                        Log.i( "response", response.message() )
+                        Log.i( "response id", MyApplication.instance.user.id.toString() )
+
+                        val jsonArray = JSONArray( jsonData )
+
+                        for ( i in 0..( jsonArray.length() -1 ) )
                         {
-                            Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+                            var item = jsonArray.getJSONObject( i )
 
-                            return@uiThread
+                            subjectList.add( Subject( item ) )
+
+                            Log.i( "response", item.toString() )
                         }
-                        else
-                        {
-                            val jsonData = response.body()!!.string()
-                            Log.i( "response", jsonData )
-                            Log.i( "response", response.message() )
-                            Log.i( "response id", MyApplication.instance.user.id.toString() )
 
-                            val jsonArray = JSONArray( jsonData )
-
-                            for ( i in 0..( jsonArray.length() -1 ) )
-                            {
-                                var item = jsonArray.getJSONObject( i )
-
-                                subjectList.add( Subject( item ) )
-
-                                Log.i( "response", item.toString() )
-                            }
-
-                            loadInputsAndVariables()
-                        }
+                        loadInputsAndVariables()
                     }
                 }
             }
-            else
-            {
-                Toast.makeText( this@SubjectActivity, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
-            }
-
-            progress_bar.visibility = View.GONE
         }
 
         override fun onCancelled()

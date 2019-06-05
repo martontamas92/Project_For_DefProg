@@ -1,31 +1,17 @@
 package com.example.qrcodescanner.activities
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.annotation.TargetApi
 import android.support.v7.app.AppCompatActivity
-import android.app.LoaderManager.LoaderCallbacks
-import android.content.CursorLoader
-import android.content.Loader
-import android.database.Cursor
-import android.net.Uri
 import android.os.AsyncTask
-import android.os.Build
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.text.TextUtils
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.ArrayAdapter
 import android.widget.TextView
-
-import java.util.ArrayList
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.widget.Toast
 import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
-
 import kotlinx.android.synthetic.main.activity_register.*
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -36,7 +22,7 @@ import org.jetbrains.anko.uiThread
 import org.json.JSONObject
 import java.net.URL
 
-class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
+class RegisterActivity : AppCompatActivity()
 {
     private lateinit var firstNameStr       : String
     private lateinit var middleNameStr      : String
@@ -150,8 +136,6 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
         }
         else
         {
-            showProgress( true )
-
             mAuthTask = RegisterTask()
             mAuthTask!!.execute( null as Void? )
         }
@@ -198,93 +182,8 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
         return jsonObject
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private fun showProgress(show: Boolean)
+    inner class RegisterTask internal constructor() : AsyncTask<Void, Void, Boolean>()
     {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2)
-        {
-            val shortAnimTime = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-
-            login_form.visibility = if (show) View.GONE else View.VISIBLE
-            login_form.animate()
-                .setDuration(shortAnimTime)
-                .alpha((if (show) 0 else 1).toFloat())
-                .setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator) {
-                        login_form.visibility = if (show) View.GONE else View.VISIBLE
-                    }
-                })
-
-            login_progress.visibility = if (show) View.VISIBLE else View.GONE
-            login_progress.animate()
-                .setDuration(shortAnimTime)
-                .alpha((if (show) 1 else 0).toFloat())
-                .setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator) {
-                        login_progress.visibility = if (show) View.VISIBLE else View.GONE
-                    }
-                })
-        }
-        else
-        {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            login_progress.visibility   = if (show) View.VISIBLE else View.GONE
-            login_form.visibility       = if (show) View.GONE else View.VISIBLE
-        }
-    }
-
-    override fun onCreateLoader(i: Int, bundle: Bundle?): Loader<Cursor>
-    {
-        return CursorLoader(
-            this,
-            // Retrieve data rows for the device user's 'profile' contact.
-            Uri.withAppendedPath(
-                ContactsContract.Profile.CONTENT_URI,
-                ContactsContract.Contacts.Data.CONTENT_DIRECTORY
-            ), ProfileQuery.PROJECTION,
-
-            // Select only email addresses.
-            ContactsContract.Contacts.Data.MIMETYPE + " = ?", arrayOf(
-                ContactsContract.CommonDataKinds.Email
-                    .CONTENT_ITEM_TYPE
-            ),
-
-            // Show primary email addresses first. Note that there won't be
-            // a primary email address if the user hasn't specified one.
-            ContactsContract.Contacts.Data.IS_PRIMARY + " DESC"
-        )
-    }
-
-    override fun onLoadFinished(cursorLoader: Loader<Cursor>, cursor: Cursor)
-    {
-        val emails = ArrayList<String>()
-        cursor.moveToFirst()
-        while (!cursor.isAfterLast) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS))
-            cursor.moveToNext()
-        }
-
-    }
-
-    override fun onLoaderReset(cursorLoader: Loader<Cursor>) {
-
-    }
-
-    object ProfileQuery {
-        val PROJECTION = arrayOf(
-            ContactsContract.CommonDataKinds.Email.ADDRESS,
-            ContactsContract.CommonDataKinds.Email.IS_PRIMARY
-        )
-        val ADDRESS = 0
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    inner class RegisterTask internal constructor() : AsyncTask<Void, Void, Boolean>() {
-
         override fun doInBackground( vararg params: Void ): Boolean?
         {
             try
@@ -303,58 +202,49 @@ class RegisterActivity : AppCompatActivity(), LoaderCallbacks<Cursor>
         {
             mAuthTask = null
 
-            showProgress( false )
-
-            if ( success!! )
-            {
-                doAsync{
-                    val client  = OkHttpClient()
-                    val url     = URL( MyApplication.URL + MyApplication.REGISTER )
-                    val json    = MediaType.get( "application/json; charset=utf-8" )
-                    val body    = RequestBody.create( json, createJsonForRegister().toString() )
-                    val request = Request.Builder()
-                        //.addHeader("Authorization", "Bearer $token")
-                        .url( url)
-                        .post( body )
-                        .build()
-                    val response = client.newCall( request ).execute()
-
-                    uiThread{
-                        Log.i( "response", response.request().toString() )
-                        //Log.i( "response", response.body()!!.string() )
-                        Log.i( "response", response.message() )
-                        Log.i( "response", response.isSuccessful.toString() )
-
-                        if( !response.isSuccessful )
-                        {
-                            Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
-
-                            return@uiThread
-                        }
-                        else
-                        {
-                            finish()
-                            Toast.makeText( applicationContext, R.string.success, Toast.LENGTH_SHORT  ).show()
-                        }
-                    }
-                }
-            }
-            else
+            if( !success!! )
             {
                 Toast.makeText( this@RegisterActivity, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+
+                return
+            }
+
+            doAsync{
+                val client  = OkHttpClient()
+                val url     = URL( MyApplication.URL + MyApplication.REGISTER )
+                val json    = MediaType.get( "application/json; charset=utf-8" )
+                val body    = RequestBody.create( json, createJsonForRegister().toString() )
+                val request = Request.Builder()
+                    //.addHeader("Authorization", "Bearer $token")
+                    .url( url)
+                    .post( body )
+                    .build()
+                val response = client.newCall( request ).execute()
+
+                uiThread{
+                    Log.i( "response", response.request().toString() )
+                    //Log.i( "response", response.body()!!.string() )
+                    Log.i( "response", response.message() )
+                    Log.i( "response", response.isSuccessful.toString() )
+
+                    if( !response.isSuccessful )
+                    {
+                        Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+
+                        return@uiThread
+                    }
+                    else
+                    {
+                        finish()
+                        Toast.makeText( applicationContext, R.string.success, Toast.LENGTH_SHORT  ).show()
+                    }
+                }
             }
         }
 
         override fun onCancelled()
         {
             mAuthTask = null
-
-            showProgress( false )
         }
-    }
-
-    companion object
-    {
-        private val DUMMY_CREDENTIALS = arrayOf("foo@example.com:hello", "bar@example.com:world")
     }
 }

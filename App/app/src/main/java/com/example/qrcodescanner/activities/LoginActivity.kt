@@ -100,7 +100,7 @@ class LoginActivity : AppCompatActivity()
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             progress_bar.visibility = View.VISIBLE
-            mAuthTask               = UserLoginTask( emailStr, passwordStr )
+            mAuthTask               = UserLoginTask()
 
             mAuthTask!!.execute( null as Void? )
         }
@@ -114,11 +114,10 @@ class LoginActivity : AppCompatActivity()
         return password.length > 4
     }
 
-    inner class UserLoginTask internal constructor(private val mEmail: String, private val mPassword: String) :
-        AsyncTask<Void, Void, Boolean>() {
+    inner class UserLoginTask internal constructor() : AsyncTask<Void, Void, Boolean>() {
 
-        override fun doInBackground(vararg params: Void): Boolean? {
-            // TODO: attempt authentication against a network service.
+        override fun doInBackground(vararg params: Void): Boolean?
+        {
 
             try {
                 // Simulate network access.
@@ -134,55 +133,55 @@ class LoginActivity : AppCompatActivity()
         {
             mAuthTask = null
 
-            if ( success!! )
+            if( !success!! )
             {
-                doAsync{
-                    val client          = OkHttpClient()
-                    val url             = URL( MyApplication.URL + MyApplication.LOGIN )
-                    val fromBodyBuilder = FormBody.Builder()
+                Toast.makeText( this@LoginActivity, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
 
-                    fromBodyBuilder.add( "uname", emailStr )
-                    fromBodyBuilder.add( "passwd", passwordStr )
-                    fromBodyBuilder.add( "status", "student" )
+                progress_bar.visibility = View.GONE
 
-                    val request = Request.Builder()
-                        //.addHeader("Authorization", "Bearer $token")
-                        .url( url)
-                        .post( fromBodyBuilder.build() )
-                        .build()
+                return
+            }
 
-                    val response = client.newCall( request ).execute()
+            doAsync{
+                val client          = OkHttpClient()
+                val url             = URL( MyApplication.URL + MyApplication.LOGIN )
+                val fromBodyBuilder = FormBody.Builder()
 
-                    uiThread{
-                        Log.i( "response", response.isSuccessful.toString() )
+                fromBodyBuilder.add( "uname", emailStr )
+                fromBodyBuilder.add( "passwd", passwordStr )
+                fromBodyBuilder.add( "status", "student" )
 
-                        if( !response.isSuccessful )
-                        {
-                            Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+                val request = Request.Builder()
+                    //.addHeader("Authorization", "Bearer $token")
+                    .url( url)
+                    .post( fromBodyBuilder.build() )
+                    .build()
 
-                            return@uiThread
-                        }
-                        else
-                        {
-                            val jsonData = response.body()!!.string()
-                            Log.i( "response", jsonData )
-                            Log.i( "response", response.message() )
+                val response = client.newCall( request ).execute()
 
-                            MyApplication.instance.user         = User( jsonData )
-                            MyApplication.instance.isLoggedIn   = true
+                uiThread{
+                    Log.i( "response", response.isSuccessful.toString() )
 
-                            Log.i( "response id",  MyApplication.instance.user.id.toString() )
-                            finish()
-                        }
+                    if( !response.isSuccessful )
+                    {
+                        Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+
+                        return@uiThread
+                    }
+                    else
+                    {
+                        val jsonData = response.body()!!.string()
+                        Log.i( "response", jsonData )
+                        Log.i( "response", response.message() )
+
+                        MyApplication.instance.user         = User( jsonData )
+                        MyApplication.instance.isLoggedIn   = true
+
+                        Log.i( "response id",  MyApplication.instance.user.id.toString() )
+                        finish()
                     }
                 }
             }
-            else
-            {
-                Toast.makeText( this@LoginActivity, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
-            }
-
-            progress_bar.visibility = View.GONE
         }
 
         override fun onCancelled()

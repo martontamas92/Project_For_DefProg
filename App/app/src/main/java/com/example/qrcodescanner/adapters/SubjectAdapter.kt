@@ -24,8 +24,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URL
 
-class SubjectAdapter( private val subjectList: ArrayList<Subject>,
-                      private val activity: SubjectActivity )
+class SubjectAdapter( private val subjectList: ArrayList<Subject>, private val activity: SubjectActivity )
     : RecyclerView.Adapter<SubjectViewHolder>()
 {
     private var subjectAttendTask : SubjectAttendTask? = null
@@ -69,14 +68,16 @@ class SubjectAdapter( private val subjectList: ArrayList<Subject>,
     }
 
     inner class SubjectAttendTask internal constructor( private val id: Int, private val position: Int ) :
-        AsyncTask<Void, Void, Boolean>() {
-
-        override fun doInBackground(vararg params: Void): Boolean? {
-            // TODO: attempt authentication against a network service.
-
-            try {
+        AsyncTask<Void, Void, Boolean>()
+    {
+        override fun doInBackground(vararg params: Void): Boolean?
+        {
+            try
+            {
                 Thread.sleep(2000)
-            } catch (e: InterruptedException) {
+            }
+            catch ( e: InterruptedException )
+            {
                 return false
             }
 
@@ -87,43 +88,42 @@ class SubjectAdapter( private val subjectList: ArrayList<Subject>,
         {
             subjectAttendTask = null
 
-            if ( success!! )
-            {
-                doAsync{
-                    val client          = OkHttpClient()
-                    val url             = URL(MyApplication.URL + MyApplication.SUBJECTATTEND )
-                    val json            = MediaType.get( "application/json; charset=utf-8" )
-                    val body            = RequestBody.create( json, createJsonForAttendSubject( id ).toString() )
-                    val request         = Request.Builder()
-                        //.addHeader("Authorization", "Bearer $token")
-                        .url( url)
-                        .post( body )
-                        .build()
-
-                    val response = client.newCall( request ).execute()
-
-                    uiThread{
-                        Log.i( "response", response.isSuccessful.toString() )
-
-                        if( !response.isSuccessful )
-                        {
-                            Toast.makeText( activity.applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
-
-                            return@uiThread
-                        }
-                        else
-                        {
-                            subjectList.removeAt( position )
-                            notifyDataSetChanged()
-
-                            activity.progress_bar.visibility = View.GONE
-                        }
-                    }
-                }
-            }
-            else
+            if( !success!! )
             {
                 Toast.makeText( activity.applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+
+                return
+            }
+
+            doAsync{
+                val client          = OkHttpClient()
+                val url             = URL(MyApplication.URL + MyApplication.SUBJECTATTEND )
+                val json            = MediaType.get( "application/json; charset=utf-8" )
+                val body            = RequestBody.create( json, createJsonForAttendSubject( id ).toString() )
+                val request         = Request.Builder()
+                    //.addHeader("Authorization", "Bearer $token")
+                    .url( url)
+                    .post( body )
+                    .build()
+
+                val response = client.newCall( request ).execute()
+
+                uiThread{
+                    Log.i( "response", response.isSuccessful.toString() )
+
+                    if( !response.isSuccessful )
+                    {
+                        Toast.makeText( activity.applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+
+                        return@uiThread
+                    }
+                    else
+                    {
+                        removeItemInList( position )
+
+                        activity.progress_bar.visibility = View.GONE
+                    }
+                }
             }
         }
 
@@ -133,10 +133,16 @@ class SubjectAdapter( private val subjectList: ArrayList<Subject>,
         }
     }
 
-    private fun createJsonForAttendSubject( id: Int ): JSONObject
+    fun removeItemInList( position: Int )
     {
-        var userId      = MyApplication.instance.user.id
-        var jsonObject  = JSONObject(
+        subjectList.removeAt( position )
+        notifyDataSetChanged()
+    }
+
+    fun createJsonForAttendSubject( id: Int ): JSONObject
+    {
+        val userId      = MyApplication.instance.user.id
+        val jsonObject  = JSONObject(
             """{
                 |"st_id":$userId,
                 |"sj_id":$id

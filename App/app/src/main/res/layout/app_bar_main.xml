@@ -18,6 +18,5 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/colorGreen"
                 app:layout_scrollFlags="scroll|enterAlways"/>
-
     </android.support.design.widget.AppBarLayout>
 </android.support.design.widget.CoordinatorLayout>

@@ -9,21 +9,24 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.Toolbar
-import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import com.example.qrcodescanner.R
-import com.google.zxing.integration.android.IntentIntegrator
-import kotlinx.android.synthetic.main.nav_header_main.*
-import android.os.Build
 import com.example.qrcodescanner.MyApplication
+import com.example.qrcodescanner.R
+import com.example.qrcodescanner.models.User
+import com.google.zxing.integration.android.IntentIntegrator
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener
 {
-    private lateinit var drawer: DrawerLayout
-    private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var drawer             : DrawerLayout
+    private lateinit var toggle             : ActionBarDrawerToggle
+    private lateinit var buttonLogin        : MenuItem
+    private lateinit var buttonRegister     : MenuItem
+    private lateinit var buttonLogout       : MenuItem
+    private lateinit var buttonScan         : MenuItem
+    private lateinit var buttonMySubjects   : MenuItem
+    private lateinit var buttonSubjects     : MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -31,7 +34,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
 
         loadNavBarAndToolbar()
-
+        loadVariables()
     }
 
     private fun loadNavBarAndToolbar()
@@ -50,13 +53,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         supportActionBar?.setHomeButtonEnabled( true )
     }
 
+    private fun loadVariables()
+    {
+        val navigationView  = findViewById<NavigationView>( R.id.nav_view )
+        val menu            = navigationView.menu
+        buttonLogin         = menu.findItem( R.id.login )
+        buttonRegister      = menu.findItem( R.id.register )
+        buttonLogout        = menu.findItem( R.id.logout )
+        buttonMySubjects    = menu.findItem( R.id.my_subject )
+        buttonScan          = menu.findItem( R.id.qr_code )
+        buttonSubjects      = menu.findItem( R.id.subject )
+    }
+
     override fun onPostCreate(savedInstanceState: Bundle?)
     {
         super.onPostCreate(savedInstanceState)
         toggle.syncState()
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?)
+    override fun onConfigurationChanged( newConfig: Configuration? )
     {
         super.onConfigurationChanged(newConfig)
         toggle.onConfigurationChanged(newConfig)
@@ -96,36 +111,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             {
                 startLoginActivity()
             }
+            R.id.logout ->
+            {
+                MyApplication.instance.isLoggedIn   = true
+                MyApplication.instance.user         = User()
+
+                setMenuItemVisibility()
+            }
         }
 
         drawer.closeDrawer( GravityCompat.START )
 
         return true
-    }
-
-    override fun onPrepareOptionsMenu( menu: Menu ): Boolean
-    {
-        /*
-        if( MyApplication.instance.isLoggedIn )
-        {
-            menu.findItem( R.id.login ).isVisible       = false
-            menu.findItem( R.id.register ).isVisible    = false
-            menu.findItem( R.id.logout ).isVisible      = true
-            menu.findItem( R.id.qr_code ).isVisible     = true
-            menu.findItem( R.id.my_subject ).isVisible  = true
-            menu.findItem( R.id.subject ).isVisible     = true
-        }
-        else
-        {
-            menu.findItem( R.id.login ).isVisible       = true
-            menu.findItem( R.id.register ).isVisible    = true
-            menu.findItem( R.id.logout ).isVisible      = false
-            menu.findItem( R.id.qr_code ).isVisible     = false
-            menu.findItem( R.id.my_subject ).isVisible  = false
-            menu.findItem( R.id.subject ).isVisible     = false
-        }*/
-
-        return super.onPrepareOptionsMenu( menu )
     }
 
     override fun onBackPressed()
@@ -201,5 +198,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onResume()
     {
         super.onResume()
+        setMenuItemVisibility()
+    }
+
+    private fun setMenuItemVisibility()
+    {
+        if( MyApplication.instance.isLoggedIn )
+        {
+            buttonLogin.isVisible       = false
+            buttonRegister.isVisible    = false
+            buttonLogout.isVisible      = true
+            buttonSubjects.isVisible    = true
+            buttonScan.isVisible        = true
+            buttonMySubjects.isVisible  = true
+        }
+        else
+        {
+            buttonLogin.isVisible       = true
+            buttonRegister.isVisible    = true
+            buttonLogout.isVisible      = false
+            buttonSubjects.isVisible    = false
+            buttonScan.isVisible        = false
+            buttonMySubjects.isVisible  = false
+        }
     }
 }
