@@ -31,15 +31,19 @@ public class SubjectHandler {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/registrate")
+	// @JWTTokenNeeded
+	// goes to demonstrator
 	public Response registrate(String data) {
 
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			Subject s;
 			s = mapper.readValue(data, Subject.class);
-
-			subjectRepository.addSubject(s); // don't call its not finished yet
-			return Response.status(201).entity(s.toString()).build();
+			if (!subjectRepository.subjectExists(s.getSubjectName())) {
+				subjectRepository.addSubject(s); // don't call its not finished yet
+				return Response.status(201).entity(s.toString()).build();
+			}
+			return Response.status(403).entity(new Message("A tantárgyat már regisztrálták").toString()).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.status(500).entity(new Message("A regisztráció nem sikerült").toString()).build();
@@ -51,6 +55,8 @@ public class SubjectHandler {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/create-lecture")
+	// @JWTTokenNeeded
+	// goes to demonstrator
 	public Response lecture(@Context UriInfo uri, String data) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -70,6 +76,8 @@ public class SubjectHandler {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XHTML_XML })
 	@Path("/demonstrator-subjectList") //
+	// @JWTTokenNeeded
+	// goes to demonstrator
 	public Response getSubjects(@QueryParam("id") Integer id) {
 		try {
 
@@ -85,6 +93,8 @@ public class SubjectHandler {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/attend")
+	// @JWTTokenNeeded
+	// goes to student
 	public Response attendLecture(String data) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -108,6 +118,8 @@ public class SubjectHandler {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XHTML_XML })
 	@Path("/student-subjectList")
+	// @JWTTokenNeeded
+	// goes to student
 	public Response getStudentSubject(@QueryParam("id") Integer id) {
 		try {
 			return Response.status(200).entity(subjectRepository.allSubjectByStId(id)).build();
@@ -121,6 +133,8 @@ public class SubjectHandler {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/student-attendedClasses")
+	// @JWTTokenNeeded
+	// goes to student
 	public Response getAttendedSubjects(@QueryParam("id") Integer id) {
 		try {
 			return Response.status(200).entity(subjectRepository.allLectures(id)).build(); // query in progress
@@ -135,6 +149,8 @@ public class SubjectHandler {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/presence-list")
+	// @JWTTokenNeeded
+	// goes to student
 	public Response attendOnClass(@QueryParam("le_id") Integer le_id, @QueryParam("st_id") Integer st_id) {
 		try {
 			/*
@@ -145,6 +161,17 @@ public class SubjectHandler {
 			 * TypeFactory.defaultInstance() .constructMapType(HashMap.class, String.class,
 			 * Integer.class)); Integer le_id = map2.get("le_id");
 			 */
+
+			if (!subjectRepository.canAttend(le_id, st_id)) {
+				return Response.status(403).entity(
+						new Message("A jelentkezés nem lehetséges, mert a diák nem jelentkezett a kurzusra").toString())
+						.build();
+			}
+			if (subjectRepository.isAttend(le_id, st_id)) {
+				return Response.status(403)
+						.entity(new Message("A jelentkezés nem lehetséges, mert a diák már jelentkezett").toString())
+						.build();
+			}
 			int a = subjectRepository.attendOnClass(st_id, le_id);
 			return Response.status(200).entity(new Message("Jelentkezes sikeres!").toString()).build();
 
@@ -159,6 +186,8 @@ public class SubjectHandler {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/classes")
+	// @JWTTokenNeeded
+	// goes to demonstrator
 	public Response pastClasses(@QueryParam("id") Integer id) {
 		try {
 
@@ -174,6 +203,8 @@ public class SubjectHandler {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/absence-list")
+	// JWTTokenNeeded
+	// goes to demonstrator
 	public Response absences(@QueryParam("id") Integer id) {
 		try {
 

@@ -13,8 +13,8 @@ public class StudentAuthController implements IAuth {
 	private Connection conn;
 
 	@Override
-	public boolean add(Auth a) {
-		try {
+	public boolean add(Auth a) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+
 			String sql = "INSERT into st_auth_a (a_st_id, a_un, a_pwd) " + "VALUES(?,?,?)";
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -27,17 +27,12 @@ public class StudentAuthController implements IAuth {
 			}
 			return true;
 
-		} catch (Exception e) {
-
-			System.out.println(e.getMessage());
-			return false;
-		}
 
 	}
 
 	@Override
-	public boolean userNameExists(String username) {
-		try {
+	public boolean userNameExists(String username) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+
 			String sql = "SELECT * FROM st_auth_a " + "WHERE a_un = ?";
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -48,16 +43,13 @@ public class StudentAuthController implements IAuth {
 				return true;
 			}
 			return false;
-		} catch (Exception e) {
-			System.out.println("uname exists: " + e.getMessage());
-			return false;
-		}
+
 
 	}
 
 	@Override
-	public boolean valid(String username, String passwd) {
-		try {
+	public boolean valid(String username, String passwd) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+
 			if (userNameExists(username)) {
 				String sql = "SELECT * FROM st_auth_a WHERE a_un like \"" + username + "\""; // rain check
 				conn = DBconnection.getConnection();
@@ -66,24 +58,19 @@ public class StudentAuthController implements IAuth {
 
 				ResultSet rs = pstmt.executeQuery();
 				rs.next();
-				System.out.println(rs.getString("a_pwd"));
+//				System.out.println(rs.getString("a_pwd"));
 				if (rs.getString("a_pwd").equals(passwd)) {
 					return true;
 				}
 				return false;
 			}
 			return false;
-		} catch (Exception e) {
-			// TODO: handle exception
-			System.out.println(e.getMessage());
-			return false;
 
-		}
 
 	}
 
-	public int getStudentId(String username) {
-		try {
+	public int getStudentId(String username) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+
 			String sql = "SELECT a_st_id FROM st_auth_a WHERE a_un like \"" + username + "\""; // rain check
 			conn = DBconnection.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -91,12 +78,9 @@ public class StudentAuthController implements IAuth {
 
 			ResultSet rs = pstmt.executeQuery();
 			rs.next();
-			System.out.println(rs.getString(("a_st_id").toString()));
+
 			return rs.getInt("a_st_id");
-		} catch (Exception e) {
-			System.out.println("st valid:" + e.getMessage());
-			return 0;
-		}
+
 
 	}
 

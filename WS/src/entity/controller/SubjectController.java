@@ -58,10 +58,10 @@ public class SubjectController implements ISubject {
 		pstmt.setString(1, subjectName);
 		ResultSet rs = pstmt.executeQuery();
 		if(rs.next()) {
-			return false;
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	public Integer subjectIdByName(String subjectName)
@@ -283,5 +283,31 @@ public class SubjectController implements ISubject {
 			resultList.add(hs);
 		}
 		return resultList;
+	}
+
+	public boolean canAttend(Integer le_id, Integer st_id) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		String sql = "select * from sj_st_attend_at a where at_sj_id in  (select sj_id from subject_sj s join lecture_le l on le_sj_id = sj_id where le_id = ?) and at_st_id = ?;";
+		conn = DBconnection.getConnection();
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		pstmt.setInt(1, le_id);
+		pstmt.setInt(2, st_id);
+		ResultSet rs = pstmt.executeQuery();
+		if(rs.next()) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isAttend(Integer le_id, Integer st_id) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+		String sql = "select * from presence_pe where pe_le_id = ? and pe_st_id = ?";
+		conn = DBconnection.getConnection();
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		pstmt.setInt(1, le_id);
+		pstmt.setInt(2, st_id);
+		ResultSet rs = pstmt.executeQuery();
+		if(rs.next()) {
+			return true;
+		}
+		return false;
 	}
 }
