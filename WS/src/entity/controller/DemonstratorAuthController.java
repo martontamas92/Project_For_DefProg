@@ -61,7 +61,6 @@ public class DemonstratorAuthController implements IAuth {
 
 			ResultSet rs = pstmt.executeQuery();
 			rs.next();
-			System.out.println(rs.getString("a_pwd"));
 			if (rs.getString("a_pwd").equals(passwd)) {
 				return true;
 			}

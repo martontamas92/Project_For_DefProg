@@ -1,12 +1,14 @@
 package model;
 
+import java.io.Serializable;
+
 import org.jetbrains.annotations.NotNull;
 
 import business_model.Name;
 import business_model.Password;
 import business_model.UserName;
 
-public class Auth {
+public class Auth implements Serializable{
 	private Integer id;
 	private UserName uname;
 	private Password passwd;

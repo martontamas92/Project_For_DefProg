@@ -25,7 +25,7 @@ public class Name {
 			return new Name(firstName, lastName);
 		}
 		else {
-			throw new IllegalArgumentException(); // im working on it... MT
+			throw new IllegalArgumentException("A vezetéknév vagy a keresztnév nem lehet üres!");
 			}
 
 

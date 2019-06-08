@@ -11,7 +11,7 @@ public class Password {
 	}
 
 	private static boolean canBuild(@NotNull String passwd) {
-		if(!passwd.equals("") && passwd.length() > 8) {
+		if(!passwd.equals("")) {
 			return true;
 		}
 		return false;
@@ -19,10 +19,10 @@ public class Password {
 
 	public static Password passwordBuilder(@NotNull String passwd) {
 		if(canBuild(passwd)) {
-			passwd = PasswordUtils.digestPassword(passwd);
+			//passwd = PasswordUtils.digestPassword(passwd);
 			return new Password(passwd);
-		}else {}
-			throw new IllegalArgumentException("A jelszó nem lehet üres!");
+		}
+		throw new IllegalArgumentException("A jelszó nem lehet üres!");
 	}
 
 	public String getPasswd() {
