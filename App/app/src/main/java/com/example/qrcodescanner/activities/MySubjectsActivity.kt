@@ -13,22 +13,22 @@ import android.widget.Toast
 import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
 import com.example.qrcodescanner.adapters.MySubjectAdapter
+import com.example.qrcodescanner.models.Message
 import com.example.qrcodescanner.models.MySubject
 import kotlinx.android.synthetic.main.activity_my_subjects.*
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import okhttp3.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import org.json.JSONArray
+import java.io.IOException
 import java.net.URL
 
 class MySubjectsActivity : AppCompatActivity()
 {
-
     private lateinit var recyclerView           : RecyclerView
     private lateinit var recyclerViewAdapter    : MySubjectAdapter
     var mySubjectList                           = ArrayList<MySubject>()
-    private var mySubjectsGetterTask            : MySubjectsGetterTask? = null
+    //private var mySubjectsGetterTask            : MySubjectsGetterTask? = null
 
     override fun onCreate( savedInstanceState: Bundle? )
     {
@@ -58,9 +58,8 @@ class MySubjectsActivity : AppCompatActivity()
     private fun loadMySubjects()
     {
         progress_bar.visibility = View.VISIBLE
-        mySubjectsGetterTask    = MySubjectsGetterTask()
 
-        mySubjectsGetterTask!!.execute( null as Void? )
+        mySubjectsAsync()
     }
 
     private fun refreshList()
@@ -73,92 +72,61 @@ class MySubjectsActivity : AppCompatActivity()
         }
     }
 
-    inner class MySubjectsGetterTask internal constructor() : AsyncTask<Void, Void, Boolean>()
+    private fun mySubjectsAsync()
     {
-        override fun doInBackground(vararg params: Void): Boolean?
-        {
+        val client          = OkHttpClient()
+        val url             = URL(
+            MyApplication.URL +
+                    MyApplication.MYSUBJECTSGETTER +
+                    "?id=" + MyApplication.instance.user.id
+        )
 
-            try
-            {
+        val token   = MyApplication.instance.bearerToken
+        val request = Request.Builder()
+            .addHeader("Authorization", "Bearer  $token")
+            .url( url )
+            .build()
 
-            } catch ( e: InterruptedException )
-            {
-                return false
-            }
+        client.newCall( request ).enqueue( object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
 
-            return true
-        }
+            override fun onResponse(call: Call, response: Response) {
+                val jsonData = response.body()?.string()
+                Log.i( "response", jsonData )
 
-        override fun onPostExecute( success: Boolean? )
-        {
-            mySubjectsGetterTask = null
-
-            if( !success!! )
-            {
-                Toast.makeText( this@MySubjectsActivity, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
-
-                progress_bar.visibility = View.GONE
-
-                return
-            }
-
-            doAsync{
-                val client          = OkHttpClient()
-                val url             = URL(
-                    MyApplication.URL +
-                            MyApplication.MYSUBJECTSGETTER +
-                            "?id=" + MyApplication.instance.user.id
-                )
-
-                Log.i( "response", MyApplication.URL +
-                        MyApplication.MYSUBJECTSGETTER +
-                        "?id=" +
-                        MyApplication.instance.user.id )
-
-                val request = Request.Builder()
-                    //.addHeader("Authorization", "Bearer $token")
-                    .url( url)
-                    .build()
-
-                val response = client.newCall( request ).execute()
-
-                uiThread{
-                    Log.i( "response", response.isSuccessful.toString() )
-
-                    if( !response.isSuccessful )
-                    {
-                        Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
-
-                        return@uiThread
-                    }
-                    else
-                    {
-                        val jsonData = response.body()!!.string()
-                        Log.i( "response", jsonData )
-                        Log.i( "response", response.message() )
-                        Log.i( "response id", MyApplication.instance.user.id.toString() )
-
-                        val jsonArray = JSONArray( jsonData )
-
-                        for ( i in 0..( jsonArray.length() -1 ) )
+                if (!response.isSuccessful){
+                    runOnUiThread {
+                        var message = Message(jsonData!!)
+                        if (message.message == "Lejárt az idő")
                         {
-                            var item = jsonArray.getJSONObject( i )
-
-                            mySubjectList.add( MySubject( item ) )
-
-                            Log.i( "response", item.toString() )
+                            Toast.makeText( applicationContext, R.string.error_token, Toast.LENGTH_SHORT  ).show()
                         }
-
-                        loadInputsAndVariables()
+                        Toast.makeText( applicationContext, R.string.error_my_subjects, Toast.LENGTH_SHORT  ).show()
+                        progress_bar.visibility = View.GONE
                     }
+
+                    return
+                }
+
+                Log.i( "response id", MyApplication.instance.user.id.toString() )
+
+                val jsonArray = JSONArray( jsonData )
+
+                for ( i in 0..( jsonArray.length() -1 ) )
+                {
+                    val item = jsonArray.getJSONObject( i )
+
+                    mySubjectList.add( MySubject( item ) )
+
+                    Log.i( "response", item.toString() )
+                }
+
+                runOnUiThread {
+                    loadInputsAndVariables()
+
+                    progress_bar.visibility = View.GONE
                 }
             }
-        }
-
-        override fun onCancelled()
-        {
-            mySubjectsGetterTask        = null
-            progress_bar.visibility     = View.GONE
-        }
+        })
     }
 }

@@ -1,9 +1,7 @@
 package com.example.qrcodescanner.adapters
 
-import android.os.AsyncTask
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,21 +11,15 @@ import com.example.qrcodescanner.models.Subject
 import com.example.qrcodescanner.R
 import com.example.qrcodescanner.activities.SubjectActivity
 import com.example.qrcodescanner.viewholders.SubjectViewHolder
-import kotlinx.android.synthetic.main.activity_subject.*
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
-import org.json.JSONArray
+import kotlinx.android.synthetic.main.activity_subject.progress_bar
+import okhttp3.*
 import org.json.JSONObject
+import java.io.IOException
 import java.net.URL
 
 class SubjectAdapter( private val subjectList: ArrayList<Subject>, private val activity: SubjectActivity )
     : RecyclerView.Adapter<SubjectViewHolder>()
 {
-    private var subjectAttendTask : SubjectAttendTask? = null
 
     override fun onCreateViewHolder( viewGroup: ViewGroup, position: Int ): SubjectViewHolder
     {
@@ -53,9 +45,8 @@ class SubjectAdapter( private val subjectList: ArrayList<Subject>, private val a
             builder.setMessage( subjectList[position].name + activity.resources.getString( R.string.add_subject_message ) )
             builder.setPositiveButton( activity.resources.getString( R.string.yes ) ){dialog, which ->
                 activity.progress_bar.visibility    = View.VISIBLE
-                subjectAttendTask                   = SubjectAttendTask( subjectList[position].id!!, position )
 
-                subjectAttendTask!!.execute( null as Void? )
+                mySubjectsAsync(subjectList[position].id, position)
             }
             builder.setNegativeButton(activity.resources.getString( R.string.no ) ){dialog,which ->
 
@@ -67,79 +58,46 @@ class SubjectAdapter( private val subjectList: ArrayList<Subject>, private val a
         }
     }
 
-    inner class SubjectAttendTask internal constructor( private val id: Int, private val position: Int ) :
-        AsyncTask<Void, Void, Boolean>()
+    private fun mySubjectsAsync(id: Int?,position: Int)
     {
-        override fun doInBackground(vararg params: Void): Boolean?
-        {
-            try
-            {
-                Thread.sleep(2000)
-            }
-            catch ( e: InterruptedException )
-            {
-                return false
-            }
+        val client          = OkHttpClient()
+        val token           = MyApplication.instance.bearerToken
+        val url             = URL(MyApplication.URL + MyApplication.SUBJECTATTEND )
+        val json            = MediaType.get( "application/json; charset=utf-8" )
+        val body            = RequestBody.create( json, createJsonForAttendSubject( id ).toString() )
+        val request         = Request.Builder()
+            .addHeader("Authorization", "Bearer $token")
+            .url( url)
+            .post( body )
+            .build()
 
-            return true
-        }
+        client.newCall( request ).enqueue( object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
 
-        override fun onPostExecute( success: Boolean? )
-        {
-            subjectAttendTask = null
+            override fun onResponse(call: Call, response: Response) {
+                if (!response.isSuccessful){
+                    Toast.makeText( activity.applicationContext, R.string.error_my_subjects, Toast.LENGTH_SHORT  ).show()
+                    activity.progress_bar.visibility = View.GONE
 
-            if( !success!! )
-            {
-                Toast.makeText( activity.applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+                    return
+                }
 
-                return
-            }
+                activity.runOnUiThread {
+                    removeItemInList( position )
 
-            doAsync{
-                val client          = OkHttpClient()
-                val url             = URL(MyApplication.URL + MyApplication.SUBJECTATTEND )
-                val json            = MediaType.get( "application/json; charset=utf-8" )
-                val body            = RequestBody.create( json, createJsonForAttendSubject( id ).toString() )
-                val request         = Request.Builder()
-                    //.addHeader("Authorization", "Bearer $token")
-                    .url( url)
-                    .post( body )
-                    .build()
-
-                val response = client.newCall( request ).execute()
-
-                uiThread{
-                    Log.i( "response", response.isSuccessful.toString() )
-
-                    if( !response.isSuccessful )
-                    {
-                        Toast.makeText( activity.applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
-
-                        return@uiThread
-                    }
-                    else
-                    {
-                        removeItemInList( position )
-
-                        activity.progress_bar.visibility = View.GONE
-                    }
+                    activity.progress_bar.visibility = View.GONE
                 }
             }
-        }
-
-        override fun onCancelled()
-        {
-            subjectAttendTask = null
-        }
+        })
     }
 
-    fun removeItemInList( position: Int )
+    fun removeItemInList(position: Int)
     {
-        subjectList.removeAt( position )
+        subjectList.removeAt(position)
         notifyDataSetChanged()
     }
 
-    fun createJsonForAttendSubject( id: Int ): JSONObject
+    fun createJsonForAttendSubject(id: Int?): JSONObject
     {
         val userId      = MyApplication.instance.user.id
         val jsonObject  = JSONObject(

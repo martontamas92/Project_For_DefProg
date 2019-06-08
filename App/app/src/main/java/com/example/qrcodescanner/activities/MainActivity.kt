@@ -16,17 +16,16 @@ import android.view.View
 import android.widget.Toast
 import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
+import com.example.qrcodescanner.models.Message
 import com.example.qrcodescanner.models.MySubject
 import com.example.qrcodescanner.models.User
 import com.google.zxing.integration.android.IntentIntegrator
-import kotlinx.android.synthetic.main.activity_subject.*
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
+import kotlinx.android.synthetic.main.activity_my_subjects.*
+import okhttp3.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import org.json.JSONArray
+import java.io.IOException
 import java.net.URL
 
 
@@ -40,7 +39,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var buttonScan                 : MenuItem
     private lateinit var buttonMySubjects           : MenuItem
     private lateinit var buttonSubjects             : MenuItem
-    private var savePresenceTask: SavePresenceTask? = null
 
     override fun onCreate( savedInstanceState: Bundle? )
     {
@@ -127,10 +125,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.logout ->
             {
-                MyApplication.instance.isLoggedIn   = true
-                MyApplication.instance.user         = User()
-
-                setMenuItemVisibility()
+                logout()
             }
         }
 
@@ -208,78 +203,55 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             return
         }
 
-        savePresenceTask = SavePresenceTask( link )
-
-        savePresenceTask!!.execute( null as Void? )
+        scanLink(link)
 
         Log.i( "scan_link", link )
     }
 
-
-    inner class SavePresenceTask internal constructor( private val url: String ) :
-        AsyncTask<Void, Void, Boolean>()
+    private fun scanLink(link:String)
     {
-        override fun doInBackground(vararg params: Void): Boolean?
-        {
-            try
-            {
-                Thread.sleep(2000)
-            }
-            catch ( e: InterruptedException )
-            {
-                return false
-            }
+        val client  = OkHttpClient()
+        val url     = URL(link + "&st_id=" + MyApplication.instance.user.id )
+        val token   = MyApplication.instance.bearerToken
+        val json    = MediaType.get( "application/json; charset=utf-8" )
+        val body    = RequestBody.create( json, "" )
+        Log.i( "response", link + "&st_id=" + MyApplication.instance.user.id )
 
-            return true
-        }
+        val request = Request.Builder()
+            .addHeader("Authorization", "Bearer $token")
+            .url(url)
+            .post(body)
+            .build()
 
-        override fun onPostExecute( success: Boolean? )
-        {
-            savePresenceTask = null
+        client.newCall( request ).enqueue( object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
 
-            if( !success!! )
-            {
-                Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+            override fun onResponse(call: Call, response: Response) {
+                val jsonData    = response.body()?.string()
+                val message     = Message(jsonData!!)
+                Log.i( "response", jsonData )
 
-                return
-            }
+                if (!response.isSuccessful){
+                    runOnUiThread {
+                        Log.i( "response", "message " + message.message )
 
-            doAsync{
-                val client          = OkHttpClient()
-                val url             = URL(url + "?id=" + MyApplication.instance.user.id )
+                        if (message.message == "Lejárt az idő")
+                        {
+                            Toast.makeText(applicationContext, message.message, Toast.LENGTH_LONG).show()
+                        }
 
-               // Log.i( "response", url + "?id=" + MyApplication.instance.user.id )
-
-                val request = Request.Builder()
-                    //.addHeader("Authorization", "Bearer $token")
-                    .url( url)
-                    .build()
-
-                val response = client.newCall( request ).execute()
-
-                uiThread{
-                    Log.i( "response", response.isSuccessful.toString() )
-
-                    if( !response.isSuccessful )
-                    {
-                        Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
-
-                        return@uiThread
+                        Toast.makeText(applicationContext, message.message, Toast.LENGTH_LONG).show()
                     }
-                    else
-                    {
-                        val jsonData = response.body()!!.string()
-                        Log.i( "response", jsonData )
-                        Log.i( "response", response.message() )
-                    }
+
+                    return
+                }
+
+                runOnUiThread {
+                    Toast.makeText(applicationContext, message.message, Toast.LENGTH_LONG ).show()
+                    Log.i( "response", "message " + message.message )
                 }
             }
-        }
-
-        override fun onCancelled()
-        {
-            savePresenceTask = null
-        }
+        })
     }
 
     override fun onResume()
@@ -308,5 +280,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             buttonScan.isVisible        = false
             buttonMySubjects.isVisible  = false
         }
+    }
+
+    private fun logout()
+    {
+        MyApplication.instance.isLoggedIn   = false
+        MyApplication.instance.bearerToken  = ""
+        MyApplication.instance.user         = User()
+
+        setMenuItemVisibility()
     }
 }
