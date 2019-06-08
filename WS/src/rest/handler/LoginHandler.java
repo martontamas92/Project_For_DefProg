@@ -72,9 +72,9 @@ public class LoginHandler {
 		try {
 			UserName uname = UserName.userNameBuilder(username);
 			Password passwd = Password.passwordBuilder(password);
-//			System.out.println("status: " + status);
-//			System.out.println("username: " + username);
-//			System.out.println("passwd: " + password);
+			System.out.println("status: " + status);
+			System.out.println("username: " + username);
+			System.out.println("passwd: " + password);
 //			System.out.println("is student: " + status.equals("student"));
 //			System.out.println("is demonstrator: " + status.equals("demonstrator"));
 //			System.out.println("demauth:" + authenticateDemonstrator(uname,passwd));
@@ -99,6 +99,7 @@ public class LoginHandler {
 			return Response.status(UNAUTHORIZED).entity(new Message("Hibás felhasználónév vagy jelszó!").toString())
 					.build();
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println(e.getMessage());
 			return Response.status(UNAUTHORIZED).entity(new Message("Autentikációs hiba történt!").toString()).build();
 		}

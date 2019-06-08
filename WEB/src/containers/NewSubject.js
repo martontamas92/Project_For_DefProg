@@ -36,7 +36,8 @@ export default class NewSubject extends Component {
       qrValue: "",
       id: "2",
       firstname: "Norbert",
-      lastname: "Szasz"
+      lastname: "Szasz",
+      subjectmajor: ""
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -46,7 +47,12 @@ export default class NewSubject extends Component {
   componentDidMount = () => {
     const loggedId = 10;
     Axios.get(
-      "http://localhost:8080/WS/home/subject/demonstrator-subjectList?id=2"
+      "http://192.168.0.185:8080/WS/home/subject/demonstrator-subjectList?id=10",
+      {
+        headers: {
+          Authorization: "Bearer " + this.props.userStates.token
+        }
+      }
     ).then(response => {
       this.setState({
         options: response.data
@@ -119,7 +125,7 @@ export default class NewSubject extends Component {
       {
         responseType: "json",
         headers: {
-          token: this.props.userStates.token
+          Authorization: "Bearer " + this.props.userStates.token
         }
       }
     )
@@ -159,6 +165,15 @@ export default class NewSubject extends Component {
                     autoFocus
                     type="text"
                     value={this.state.subname}
+                    onChange={this.handleChange}
+                  />
+                </FormGroup>
+                <FormGroup controlId="subjectmajor" bsSize="large">
+                  <ControlLabel>Szak neve</ControlLabel>
+                  <FormControl
+                    autoFocus
+                    type="text"
+                    value={this.state.subjectmajor}
                     onChange={this.handleChange}
                   />
                 </FormGroup>
