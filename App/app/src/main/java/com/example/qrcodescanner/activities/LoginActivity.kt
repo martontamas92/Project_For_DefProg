@@ -27,13 +27,12 @@ class LoginActivity : AppCompatActivity()
     private lateinit var emailStr       : String
     private lateinit var passwordStr    : String
 
-    override fun onCreate(savedInstanceState: Bundle?)
+    override fun onCreate( savedInstanceState: Bundle? )
     {
         super.onCreate( savedInstanceState )
         setContentView( R.layout.activity_login )
 
         loadToolbar()
-        // Set up the login form.
         password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attemptLogin()
@@ -59,46 +58,40 @@ class LoginActivity : AppCompatActivity()
             return
         }
 
-        // Reset errors.
-        email.error = null
-        password.error = null
+        email.error     = null
+        password.error  = null
+        emailStr        = email.text.toString()
+        passwordStr     = password.text.toString()
 
-        // Store values at the time of the login attempt.
-        emailStr = email.text.toString()
-        passwordStr = password.text.toString()
+        var cancel              = false
+        var focusView: View?    = null
 
-        var cancel = false
-        var focusView: View? = null
-
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(passwordStr) && !isPasswordValid(passwordStr))
+        if ( !TextUtils.isEmpty( passwordStr ) && !isPasswordValid( passwordStr ) )
         {
-            password.error = getString(R.string.error_invalid_password)
-            focusView = password
-            cancel = true
+            password.error  = getString(R.string.error_invalid_password)
+            focusView       = password
+            cancel          = true
         }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(emailStr)) {
-            email.error = getString(R.string.error_field_required)
-            focusView = email
-            cancel = true
-        } else if (!isEmailValid(emailStr)) {
-            email.error = getString(R.string.error_invalid_email)
-            focusView = email
-            cancel = true
+        if ( TextUtils.isEmpty( emailStr ) )
+        {
+            email.error = getString( R.string.error_field_required )
+            focusView   = email
+            cancel      = true
+        }
+        else if ( !isEmailValid( emailStr ) )
+        {
+            email.error = getString( R.string.error_invalid_email )
+            focusView   = email
+            cancel      = true
         }
 
-        if ( cancel )
+        if( cancel )
         {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
             focusView?.requestFocus()
         }
         else
         {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
             progress_bar.visibility = View.VISIBLE
             mAuthTask               = UserLoginTask()
 
@@ -106,23 +99,27 @@ class LoginActivity : AppCompatActivity()
         }
     }
 
-    private fun isEmailValid(email: String): Boolean {
+    private fun isEmailValid( email: String ): Boolean
+    {
         return email.contains("@")
     }
 
-    private fun isPasswordValid(password: String): Boolean {
+    private fun isPasswordValid( password: String ): Boolean
+    {
         return password.length > 4
     }
 
-    inner class UserLoginTask internal constructor() : AsyncTask<Void, Void, Boolean>() {
-
+    inner class UserLoginTask internal constructor(): AsyncTask<Void, Void, Boolean>()
+    {
         override fun doInBackground(vararg params: Void): Boolean?
         {
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000)
-            } catch (e: InterruptedException) {
+            try
+            {
+
+            }
+            catch ( e: InterruptedException )
+            {
                 return false
             }
 
@@ -133,9 +130,9 @@ class LoginActivity : AppCompatActivity()
         {
             mAuthTask = null
 
-            if( !success!! )
+            if ( !success!! )
             {
-                Toast.makeText( this@LoginActivity, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+                Toast.makeText( this@LoginActivity, R.string.error_login, Toast.LENGTH_SHORT  ).show()
 
                 progress_bar.visibility = View.GONE
 
@@ -164,7 +161,7 @@ class LoginActivity : AppCompatActivity()
 
                     if( !response.isSuccessful )
                     {
-                        Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+                        Toast.makeText( applicationContext, R.string.error_login, Toast.LENGTH_SHORT  ).show()
 
                         return@uiThread
                     }

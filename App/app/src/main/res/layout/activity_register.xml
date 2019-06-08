@@ -20,14 +20,15 @@
                 app:layout_scrollFlags="scroll|enterAlways"/>
 
     </android.support.design.widget.AppBarLayout>
-    <!-- Login progress -->
+
     <ProgressBar
-            android:id="@+id/login_progress"
-            style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone"/>
+            android:layout_marginTop="15dp"
+            android:id="@+id/progress_bar"
+            android:visibility="gone"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_gravity="center"/>
 
     <ScrollView
             android:id="@+id/login_form"

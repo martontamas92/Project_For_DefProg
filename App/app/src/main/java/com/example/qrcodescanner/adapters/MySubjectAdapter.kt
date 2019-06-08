@@ -28,7 +28,6 @@ class MySubjectAdapter( private val mySubjectList: ArrayList<MySubject>  ) : Rec
     override fun onBindViewHolder( holder: MySubjectViewHolder, position: Int )
     {
         holder.name?.text           = mySubjectList[position].name
-        holder.teacher?.text        = mySubjectList[position].teacher
         holder.totalPresence?.text  = mySubjectList[position].totalPresence.toString()
         holder.myPresence?.text     = mySubjectList[position].myPresence.toString()
 

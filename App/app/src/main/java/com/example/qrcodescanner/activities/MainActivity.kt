@@ -2,6 +2,7 @@ package com.example.qrcodescanner.activities
 
 import android.content.Intent
 import android.content.res.Configuration
+import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -9,29 +10,42 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
+import com.example.qrcodescanner.models.MySubject
 import com.example.qrcodescanner.models.User
 import com.google.zxing.integration.android.IntentIntegrator
+import kotlinx.android.synthetic.main.activity_subject.*
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
+import org.json.JSONArray
+import java.net.URL
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener
 {
-    private lateinit var drawer             : DrawerLayout
-    private lateinit var toggle             : ActionBarDrawerToggle
-    private lateinit var buttonLogin        : MenuItem
-    private lateinit var buttonRegister     : MenuItem
-    private lateinit var buttonLogout       : MenuItem
-    private lateinit var buttonScan         : MenuItem
-    private lateinit var buttonMySubjects   : MenuItem
-    private lateinit var buttonSubjects     : MenuItem
+    private lateinit var drawer                     : DrawerLayout
+    private lateinit var toggle                     : ActionBarDrawerToggle
+    private lateinit var buttonLogin                : MenuItem
+    private lateinit var buttonRegister             : MenuItem
+    private lateinit var buttonLogout               : MenuItem
+    private lateinit var buttonScan                 : MenuItem
+    private lateinit var buttonMySubjects           : MenuItem
+    private lateinit var buttonSubjects             : MenuItem
+    private var savePresenceTask: SavePresenceTask? = null
 
-    override fun onCreate(savedInstanceState: Bundle?)
+    override fun onCreate( savedInstanceState: Bundle? )
     {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        super.onCreate( savedInstanceState )
+        setContentView( R.layout.activity_main )
 
         loadNavBarAndToolbar()
         loadVariables()
@@ -65,7 +79,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         buttonSubjects      = menu.findItem( R.id.subject )
     }
 
-    override fun onPostCreate(savedInstanceState: Bundle?)
+    override fun onPostCreate( savedInstanceState: Bundle? )
     {
         super.onPostCreate(savedInstanceState)
         toggle.syncState()
@@ -84,7 +98,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             return true
         }
 
-        return super.onOptionsItemSelected(item)
+        return super.onOptionsItemSelected( item )
     }
 
     override fun onNavigationItemSelected( item: MenuItem ): Boolean
@@ -173,25 +187,98 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         startActivity( intent )
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    override fun onActivityResult( requestCode: Int, resultCode: Int, data: Intent? )
+    {
+        super.onActivityResult( requestCode, resultCode, data )
 
-        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        val result  = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        val link    = result.contents
 
-        if ( result != null )
+        if( result == null )
         {
-            if (result.contents == null)
+            super.onActivityResult( requestCode, resultCode, data )
+
+            return
+        }
+
+        if ( link == null )
+        {
+            Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show()
+
+            return
+        }
+
+        savePresenceTask = SavePresenceTask( link )
+
+        savePresenceTask!!.execute( null as Void? )
+
+        Log.i( "scan_link", link )
+    }
+
+
+    inner class SavePresenceTask internal constructor( private val url: String ) :
+        AsyncTask<Void, Void, Boolean>()
+    {
+        override fun doInBackground(vararg params: Void): Boolean?
+        {
+            try
             {
-                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show()
+                Thread.sleep(2000)
             }
-            else
+            catch ( e: InterruptedException )
             {
-                Toast.makeText(this, "Scanned: " + result.contents, Toast.LENGTH_LONG).show()
+                return false
+            }
+
+            return true
+        }
+
+        override fun onPostExecute( success: Boolean? )
+        {
+            savePresenceTask = null
+
+            if( !success!! )
+            {
+                Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+
+                return
+            }
+
+            doAsync{
+                val client          = OkHttpClient()
+                val url             = URL(url + "?id=" + MyApplication.instance.user.id )
+
+               // Log.i( "response", url + "?id=" + MyApplication.instance.user.id )
+
+                val request = Request.Builder()
+                    //.addHeader("Authorization", "Bearer $token")
+                    .url( url)
+                    .build()
+
+                val response = client.newCall( request ).execute()
+
+                uiThread{
+                    Log.i( "response", response.isSuccessful.toString() )
+
+                    if( !response.isSuccessful )
+                    {
+                        Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+
+                        return@uiThread
+                    }
+                    else
+                    {
+                        val jsonData = response.body()!!.string()
+                        Log.i( "response", jsonData )
+                        Log.i( "response", response.message() )
+                    }
+                }
             }
         }
-        else
+
+        override fun onCancelled()
         {
-            super.onActivityResult(requestCode, resultCode, data)
+            savePresenceTask = null
         }
     }
 

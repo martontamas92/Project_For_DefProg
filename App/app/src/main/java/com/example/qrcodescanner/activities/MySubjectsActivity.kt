@@ -58,7 +58,7 @@ class MySubjectsActivity : AppCompatActivity()
     private fun loadMySubjects()
     {
         progress_bar.visibility = View.VISIBLE
-        mySubjectsGetterTask      = MySubjectsGetterTask()
+        mySubjectsGetterTask    = MySubjectsGetterTask()
 
         mySubjectsGetterTask!!.execute( null as Void? )
     }
@@ -157,8 +157,8 @@ class MySubjectsActivity : AppCompatActivity()
 
         override fun onCancelled()
         {
-            mySubjectsGetterTask      = null
-            progress_bar.visibility = View.GONE
+            mySubjectsGetterTask        = null
+            progress_bar.visibility     = View.GONE
         }
     }
 }

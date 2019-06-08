@@ -13,6 +13,9 @@ import android.widget.Toast
 import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
 import kotlinx.android.synthetic.main.activity_register.*
+import kotlinx.android.synthetic.main.activity_register.email
+import kotlinx.android.synthetic.main.activity_register.email_sign_in_button
+import kotlinx.android.synthetic.main.activity_register.password
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -136,7 +139,9 @@ class RegisterActivity : AppCompatActivity()
         }
         else
         {
-            mAuthTask = RegisterTask()
+            progress_bar.visibility = View.VISIBLE
+            mAuthTask               = RegisterTask()
+
             mAuthTask!!.execute( null as Void? )
         }
     }
@@ -244,7 +249,8 @@ class RegisterActivity : AppCompatActivity()
 
         override fun onCancelled()
         {
-            mAuthTask = null
+            mAuthTask               = null
+            progress_bar.visibility = View.GONE
         }
     }
 }
