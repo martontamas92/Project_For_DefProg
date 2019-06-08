@@ -17,7 +17,7 @@ public class UserName {
 		if(canBuild(uname)) {
 			return new UserName(uname);
 		}else {
-			throw new IllegalArgumentException("Argument doesn't fit the conditions");
+			throw new IllegalArgumentException("A felhasználónév hossza nem megfelelõ");
 		}
 	}
 

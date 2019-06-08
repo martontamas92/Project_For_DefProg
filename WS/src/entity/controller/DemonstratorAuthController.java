@@ -81,7 +81,7 @@ public class DemonstratorAuthController implements IAuth {
 
 		ResultSet rs = pstmt.executeQuery();
 		rs.next();
-		System.out.println(rs.getString(("a_de_id").toString()));
+
 		return rs.getInt("a_de_id");
 
 	}
