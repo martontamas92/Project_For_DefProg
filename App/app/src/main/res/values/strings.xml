@@ -37,5 +37,9 @@
     <string name="error_field_required">Ez a mező kötelező</string>
     <string name="error_registration">Hiba a regisztrációban</string>
     <string name="error_login">Hiba a bejelentkezésben</string>
+    <string name="error_my_subjects">Hiba a saját tárgyaim lekérésében</string>
+    <string name="error_subjects">Hiba a tárgyak lekérésében</string>
+    <string name="error_attend_subject">Hiba a tárgyfelvételben</string>
+    <string name="error_token">Jelentkezz ki</string>
     <string name="success">Sikeres</string>
 </resources>

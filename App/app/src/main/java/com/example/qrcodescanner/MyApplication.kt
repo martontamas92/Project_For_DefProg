@@ -7,6 +7,7 @@ class MyApplication : Application()
 {
     lateinit var user   : User
     var isLoggedIn      = false
+    var bearerToken     = ""
 
     override fun onCreate()
     {
@@ -21,7 +22,7 @@ class MyApplication : Application()
         val LOGIN               = "authentication/login"
         val SUBJECTSGETTER      = "subject/student-subjectList"
         val SUBJECTATTEND       = "subject/attend"
-        val MYSUBJECTSGETTER    = "subject/presence-list"
+        val MYSUBJECTSGETTER    = "subject/student-attendedClasses"
         lateinit var instance   : MyApplication
             private set
     }

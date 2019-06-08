@@ -16,13 +16,11 @@ import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.activity_register.email
 import kotlinx.android.synthetic.main.activity_register.email_sign_in_button
 import kotlinx.android.synthetic.main.activity_register.password
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import org.json.JSONObject
+import java.io.IOException
 import java.net.URL
 
 class RegisterActivity : AppCompatActivity()
@@ -34,7 +32,7 @@ class RegisterActivity : AppCompatActivity()
     private lateinit var emailStr           : String
     private lateinit var passwordStr        : String
     private lateinit var confirmPasswordStr : String
-    private var mAuthTask: RegisterTask?    = null
+    //private var mAuthTask: RegisterTask?    = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,11 +60,6 @@ class RegisterActivity : AppCompatActivity()
 
     private fun attemptRegister()
     {
-        if ( mAuthTask != null )
-        {
-            return
-        }
-
         first_name.error        = null
         middle_name.error       = null
         last_name.error         = null
@@ -140,9 +133,8 @@ class RegisterActivity : AppCompatActivity()
         else
         {
             progress_bar.visibility = View.VISIBLE
-            mAuthTask               = RegisterTask()
 
-            mAuthTask!!.execute( null as Void? )
+            registerAsync()
         }
     }
 
@@ -166,6 +158,46 @@ class RegisterActivity : AppCompatActivity()
         return neptunCode.length == 6
     }
 
+    private fun registerAsync()
+    {
+        val client  = OkHttpClient()
+        val token   = MyApplication.instance.bearerToken
+        val url     = URL( MyApplication.URL + MyApplication.REGISTER )
+        val json    = MediaType.get( "application/json; charset=utf-8" )
+        val body    = RequestBody.create( json, createJsonForRegister().toString() )
+        val request = Request.Builder()
+            .addHeader("Authorization", "Bearer $token")
+            .url( url)
+            .post( body )
+            .build()
+
+
+        client.newCall( request ).enqueue( object : Callback {
+            override fun onFailure(call: Call, e: IOException) {}
+
+            override fun onResponse(call: Call, response: Response) {
+                if (!response.isSuccessful){
+                    runOnUiThread {
+                        Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+                        progress_bar.visibility = View.GONE
+                    }
+
+                    return
+                }
+
+                Log.i( "response", response.request().toString() )
+                //Log.i( "response", response.body()!!.string() )
+                Log.i( "response", response.message() )
+                Log.i( "response", response.isSuccessful.toString() )
+
+                finish()
+                runOnUiThread {
+                    Toast.makeText( applicationContext, R.string.success, Toast.LENGTH_SHORT  ).show()
+                }
+            }
+        })
+    }
+
     private fun createJsonForRegister(): JSONObject
     {
         var jsonObject = JSONObject(
@@ -185,72 +217,5 @@ class RegisterActivity : AppCompatActivity()
                 |""".trimMargin()
         )
         return jsonObject
-    }
-
-    inner class RegisterTask internal constructor() : AsyncTask<Void, Void, Boolean>()
-    {
-        override fun doInBackground( vararg params: Void ): Boolean?
-        {
-            try
-            {
-                Thread.sleep( 2000 )
-            }
-            catch ( e: InterruptedException )
-            {
-                return false
-            }
-
-            return true
-        }
-
-        override fun onPostExecute( success: Boolean? )
-        {
-            mAuthTask = null
-
-            if( !success!! )
-            {
-                Toast.makeText( this@RegisterActivity, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
-
-                return
-            }
-
-            doAsync{
-                val client  = OkHttpClient()
-                val url     = URL( MyApplication.URL + MyApplication.REGISTER )
-                val json    = MediaType.get( "application/json; charset=utf-8" )
-                val body    = RequestBody.create( json, createJsonForRegister().toString() )
-                val request = Request.Builder()
-                    //.addHeader("Authorization", "Bearer $token")
-                    .url( url)
-                    .post( body )
-                    .build()
-                val response = client.newCall( request ).execute()
-
-                uiThread{
-                    Log.i( "response", response.request().toString() )
-                    //Log.i( "response", response.body()!!.string() )
-                    Log.i( "response", response.message() )
-                    Log.i( "response", response.isSuccessful.toString() )
-
-                    if( !response.isSuccessful )
-                    {
-                        Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
-
-                        return@uiThread
-                    }
-                    else
-                    {
-                        finish()
-                        Toast.makeText( applicationContext, R.string.success, Toast.LENGTH_SHORT  ).show()
-                    }
-                }
-            }
-        }
-
-        override fun onCancelled()
-        {
-            mAuthTask               = null
-            progress_bar.visibility = View.GONE
-        }
     }
 }
