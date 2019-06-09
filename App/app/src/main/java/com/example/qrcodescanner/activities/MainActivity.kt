@@ -2,8 +2,6 @@ package com.example.qrcodescanner.activities
 
 import android.content.Intent
 import android.content.res.Configuration
-import android.os.AsyncTask
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -12,33 +10,21 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
+import com.example.qrcodescanner.MyActivity
 import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
 import com.example.qrcodescanner.models.Message
-import com.example.qrcodescanner.models.MySubject
-import com.example.qrcodescanner.models.User
 import com.google.zxing.integration.android.IntentIntegrator
-import kotlinx.android.synthetic.main.activity_my_subjects.*
 import okhttp3.*
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
-import org.json.JSONArray
 import java.io.IOException
 import java.net.URL
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener
+class MainActivity : MyActivity(), NavigationView.OnNavigationItemSelectedListener
 {
-    private lateinit var drawer                     : DrawerLayout
-    private lateinit var toggle                     : ActionBarDrawerToggle
-    private lateinit var buttonLogin                : MenuItem
-    private lateinit var buttonRegister             : MenuItem
-    private lateinit var buttonLogout               : MenuItem
-    private lateinit var buttonScan                 : MenuItem
-    private lateinit var buttonMySubjects           : MenuItem
-    private lateinit var buttonSubjects             : MenuItem
+    private lateinit var drawer     : DrawerLayout
+    private lateinit var toggle     : ActionBarDrawerToggle
 
     override fun onCreate( savedInstanceState: Bundle? )
     {
@@ -70,11 +56,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val navigationView  = findViewById<NavigationView>( R.id.nav_view )
         val menu            = navigationView.menu
         buttonLogin         = menu.findItem( R.id.login )
+        buttonScanMain      = findViewById( R.id.scan )
         buttonRegister      = menu.findItem( R.id.register )
         buttonLogout        = menu.findItem( R.id.logout )
         buttonMySubjects    = menu.findItem( R.id.my_subject )
         buttonScan          = menu.findItem( R.id.qr_code )
-        buttonSubjects      = menu.findItem( R.id.subject )
+        buttonSubjects      = menu.findItem( R.id.subject )=
     }
 
     override fun onPostCreate( savedInstanceState: Bundle? )
@@ -175,13 +162,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         startActivity( intent )
     }
 
-    private fun startRegisterActivity()
-    {
-        val intent = Intent( this, RegisterActivity::class.java )
-
-        startActivity( intent )
-    }
-
     override fun onActivityResult( requestCode: Int, resultCode: Int, data: Intent? )
     {
         super.onActivityResult( requestCode, resultCode, data )
@@ -223,21 +203,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .post(body)
             .build()
 
-        client.newCall( request ).enqueue( object : Callback {
-            override fun onFailure(call: Call, e: IOException) {}
+        client.newCall(request ).enqueue(object: Callback{
+            override fun onFailure(call: Call, e: IOException){}
 
             override fun onResponse(call: Call, response: Response) {
-                val jsonData    = response.body()?.string()
-                val message     = Message(jsonData!!)
+                val jsonData = response.body()?.string()
+                val message  = Message(jsonData!!)
                 Log.i( "response", jsonData )
 
-                if (!response.isSuccessful){
+                if ( !response.isSuccessful )
+                {
                     runOnUiThread {
-                        Log.i( "response", "message " + message.message )
-
-                        if (message.message == "Lejárt az idő")
+                        if ( message.message == "Lejárt az idő" )
                         {
                             Toast.makeText(applicationContext, message.message, Toast.LENGTH_LONG).show()
+                            logout()
+
+                            return@runOnUiThread
                         }
 
                         Toast.makeText(applicationContext, message.message, Toast.LENGTH_LONG).show()
@@ -248,7 +230,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 runOnUiThread {
                     Toast.makeText(applicationContext, message.message, Toast.LENGTH_LONG ).show()
-                    Log.i( "response", "message " + message.message )
                 }
             }
         })
@@ -257,37 +238,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onResume()
     {
         super.onResume()
-        setMenuItemVisibility()
-    }
-
-    private fun setMenuItemVisibility()
-    {
-        if( MyApplication.instance.isLoggedIn )
-        {
-            buttonLogin.isVisible       = false
-            buttonRegister.isVisible    = false
-            buttonLogout.isVisible      = true
-            buttonSubjects.isVisible    = true
-            buttonScan.isVisible        = true
-            buttonMySubjects.isVisible  = true
-        }
-        else
-        {
-            buttonLogin.isVisible       = true
-            buttonRegister.isVisible    = true
-            buttonLogout.isVisible      = false
-            buttonSubjects.isVisible    = false
-            buttonScan.isVisible        = false
-            buttonMySubjects.isVisible  = false
-        }
-    }
-
-    private fun logout()
-    {
-        MyApplication.instance.isLoggedIn   = false
-        MyApplication.instance.bearerToken  = ""
-        MyApplication.instance.user         = User()
-
         setMenuItemVisibility()
     }
 }

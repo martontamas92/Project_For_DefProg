@@ -1,7 +1,5 @@
 package com.example.qrcodescanner.activities
 
-import android.os.AsyncTask
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -10,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.example.qrcodescanner.MyActivity
 import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
 import com.example.qrcodescanner.adapters.MySubjectAdapter
@@ -17,18 +16,15 @@ import com.example.qrcodescanner.models.Message
 import com.example.qrcodescanner.models.MySubject
 import kotlinx.android.synthetic.main.activity_my_subjects.*
 import okhttp3.*
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
 import org.json.JSONArray
 import java.io.IOException
 import java.net.URL
 
-class MySubjectsActivity : AppCompatActivity()
+class MySubjectsActivity : MyActivity()
 {
     private lateinit var recyclerView           : RecyclerView
     private lateinit var recyclerViewAdapter    : MySubjectAdapter
     var mySubjectList                           = ArrayList<MySubject>()
-    //private var mySubjectsGetterTask            : MySubjectsGetterTask? = null
 
     override fun onCreate( savedInstanceState: Bundle? )
     {

@@ -1,6 +1,6 @@
 package com.example.qrcodescanner.activities
 
-import android.support.v7.app.AppCompatActivity
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
@@ -9,7 +9,9 @@ import android.widget.TextView
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.widget.Toast
+import com.example.qrcodescanner.MyActivity
 import com.example.qrcodescanner.MyApplication
+import com.example.qrcodescanner.MyPreference
 import com.example.qrcodescanner.R
 import com.example.qrcodescanner.models.User
 import kotlinx.android.synthetic.main.activity_login.*
@@ -19,26 +21,21 @@ import java.io.IOException
 import java.net.URL
 
 
-class LoginActivity : AppCompatActivity()
+class LoginActivity : MyActivity()
 {
-    private lateinit var emailStr       : String
-    private lateinit var passwordStr    : String
+    private lateinit var emailStr               : String
+    private lateinit var passwordStr            : String
 
     override fun onCreate( savedInstanceState: Bundle? )
     {
         super.onCreate( savedInstanceState )
         setContentView( R.layout.activity_login )
 
-        loadToolbar()
-        password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
-            if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                attemptLogin()
-                return@OnEditorActionListener true
-            }
-            false
-        })
+        val myPreference = MyPreference( this )
 
-        email_sign_in_button.setOnClickListener { attemptLogin() }
+        loadToolbar()
+        loadSharedPreferences( myPreference )
+        setOnClickListeners( myPreference )
     }
 
     private fun loadToolbar()
@@ -48,9 +45,48 @@ class LoginActivity : AppCompatActivity()
         setSupportActionBar( toolbar )
     }
 
+    private fun loadSharedPreferences( myPreference: MyPreference )
+    {
+        val checkBox = myPreference.getCheckbox()
+
+        email.setText( myPreference.getEmail() )
+        password.setText( myPreference.getPassword() )
+
+        if ( checkBox )
+        {
+            remember_me.isChecked = true
+        }
+
+    }
+
+    private fun setOnClickListeners( myPreference: MyPreference )
+    {
+        not_registrated.setOnClickListener {
+            startRegisterActivity()
+        }
+
+        email_sign_in_button.setOnClickListener {
+            attemptLogin()
+            saveUserData( myPreference )
+        }
+    }
+
+    private fun saveUserData( myPreference: MyPreference )
+    {
+        if ( remember_me.isChecked )
+        {
+            myPreference.setEmail( emailStr )
+            myPreference.setPassword( passwordStr )
+            myPreference.setCheckBox( true )
+        }
+        else
+        {
+            myPreference.clearSharedPreference()
+        }
+    }
+
     private fun attemptLogin()
     {
-
         email.error     = null
         password.error  = null
         emailStr        = email.text.toString()

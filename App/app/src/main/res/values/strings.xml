@@ -10,6 +10,8 @@
     <string name="register">Regisztráció</string>
     <string name="logout">Kijelentkezés</string>
     <string name="presence">Jelenlét: </string>
+    <string name="not_registrated">Még nem regisztrált?</string>
+    <string name="remember_me">Emlékezz rám</string>
     <string name="navigation_drawer_open">open</string>
     <string name="navigation_drawer_close">close</string>
     <string name="add_subject">Új tárgy hozzáadása</string>
