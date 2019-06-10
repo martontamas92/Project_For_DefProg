@@ -35,10 +35,8 @@ export default class NewSubject extends Component {
       selectedOption: null,
       options: [],
       qrValue: "",
-      id: "7",
-      firstname: "Norbert",
-      lastname: "Szasz",
-      subjectmajor: ""
+      subjectmajor: "",
+      id: ""
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -46,9 +44,14 @@ export default class NewSubject extends Component {
   }
 
   componentDidMount = () => {
-    const loggedId = 10;
+    this.getSubjectList();
+  };
+
+  getSubjectList = () => {
+    let { id } = this.state;
+    id = this.props.userStates.demonstrator.id;
     Axios.get(
-      "http://" + link + "/WS/home/subject/demonstrator-subjectList?id=7",
+      "http://" + link + "/WS/home/subject/demonstrator-subjectList?id=" + id,
       {
         headers: {
           Authorization: "Bearer " + this.props.userStates.token
@@ -85,16 +88,11 @@ export default class NewSubject extends Component {
         {
           subjectName: this.state.subname,
           subjectMajor: this.state.subjectmajor,
-          demonstrator: {
-            id: this.state.id,
-            name: {
-              firstName: this.state.firstname,
-              lastName: this.state.lastname
-            }
-          }
+          demonstrator: this.props.userStates.demonstrator
         },
         { responseType: "json" }
       ).then(response => {
+        this.getSubjectList();
         console.log(response.data);
         const object = JSON.stringify(response.data);
         JSON.parse(object, (key, value) => {

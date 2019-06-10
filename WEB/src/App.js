@@ -19,7 +19,7 @@ class App extends Component {
       lastName: ""
     };
     const savedUserStates = localStorage.getItem("userStates");
-    //localStorage.clear();
+    localStorage.clear();
     if (savedUserStates) {
       initialUserStates = JSON.parse(savedUserStates);
     }
@@ -59,6 +59,9 @@ class App extends Component {
       return [
         <LinkContainer to="/newsubject">
           <NavItem>Tantargyak</NavItem>
+        </LinkContainer>,
+        <LinkContainer to="/presence">
+          <NavItem>Jelenlét</NavItem>
         </LinkContainer>,
         <DropdownMenu userName={currentUserName}>
           <MenuItem text="Edit Profile" location="/profile" />

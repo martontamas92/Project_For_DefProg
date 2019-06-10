@@ -35,7 +35,7 @@ export default class Signup extends Component {
       this.state.email.length > 0 &&
       this.state.lastname.length > 0 &&
       this.state.firstname.length > 0 &&
-      this.state.password.length > 0 &&
+      this.state.password.length > 7 &&
       this.state.password === this.state.confirmPassword
     );
   }
