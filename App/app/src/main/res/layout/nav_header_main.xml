@@ -8,7 +8,7 @@
               android:focusable="true"
               android:foreground="?attr/selectableItemBackgroundBorderless"
               android:gravity="bottom"
-              android:orientation="vertical"
+              android:orientation="horizontal"
               android:padding="16dp"
               android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
@@ -18,10 +18,23 @@
             android:layout_height="64dp"
             android:src="@drawable/ic_university_64_black" />
 
-    <TextView
-            android:id="@+id/username"
-            android:layout_width="match_parent"
+    <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="16dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical">
+
+        <TextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+        <TextView
+                android:id="@+id/neptun_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+    </LinearLayout>
 </LinearLayout>

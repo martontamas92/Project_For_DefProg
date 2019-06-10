@@ -29,6 +29,17 @@
             android:id="@+id/progress_bar"
             android:layout_gravity="center"/>
 
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:id="@+id/no_subjects"
+            android:visibility="gone"
+            android:textStyle="bold"
+            android:textColor="@color/colorRed"
+            android:layout_marginTop="20dp"
+            android:text="@string/no_subjects"/>
+
     <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipe_container"
             android:layout_width="match_parent"

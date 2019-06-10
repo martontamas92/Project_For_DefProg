@@ -10,6 +10,7 @@ import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.models.Subject
 import com.example.qrcodescanner.R
 import com.example.qrcodescanner.activities.SubjectActivity
+import com.example.qrcodescanner.models.Message
 import com.example.qrcodescanner.viewholders.SubjectViewHolder
 import kotlinx.android.synthetic.main.activity_subject.progress_bar
 import okhttp3.*
@@ -46,7 +47,7 @@ class SubjectAdapter( private val subjectList: ArrayList<Subject>, private val a
             builder.setPositiveButton( activity.resources.getString( R.string.yes ) ){dialog, which ->
                 activity.progress_bar.visibility    = View.VISIBLE
 
-                mySubjectsAsync(subjectList[position].id, position)
+                mySubjectsAsync( subjectList[position].id, position )
             }
             builder.setNegativeButton(activity.resources.getString( R.string.no ) ){dialog,which ->
 
@@ -71,16 +72,25 @@ class SubjectAdapter( private val subjectList: ArrayList<Subject>, private val a
             .post( body )
             .build()
 
-        client.newCall( request ).enqueue( object : Callback {
-            override fun onFailure(call: Call, e: IOException) {}
+        client.newCall( request ).enqueue( object : Callback
+        {
+            override fun onFailure( call: Call, e: IOException ){}
 
-            override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful){
-                    Toast.makeText( activity.applicationContext, R.string.error_my_subjects, Toast.LENGTH_SHORT  ).show()
+            override fun onResponse( call: Call, response: Response )
+            {
+                val jsonData    = response.body()!!.string()
+                val message     = Message( jsonData )
+
+                if ( !response.isSuccessful )
+                {
+                    Toast.makeText( activity.applicationContext,message.message, Toast.LENGTH_SHORT  ).show()
+
                     activity.progress_bar.visibility = View.GONE
 
                     return
                 }
+
+                Toast.makeText( activity.applicationContext,message.message, Toast.LENGTH_SHORT  ).show()
 
                 activity.runOnUiThread {
                     removeItemInList( position )

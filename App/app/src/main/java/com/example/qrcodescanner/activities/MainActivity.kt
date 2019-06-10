@@ -10,12 +10,15 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
+import android.webkit.URLUtil
 import android.widget.Toast
 import com.example.qrcodescanner.MyActivity
 import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
 import com.example.qrcodescanner.models.Message
 import com.google.zxing.integration.android.IntentIntegrator
+import kotlinx.android.synthetic.main.nav_header_main.*
 import okhttp3.*
 import java.io.IOException
 import java.net.URL
@@ -23,8 +26,8 @@ import java.net.URL
 
 class MainActivity : MyActivity(), NavigationView.OnNavigationItemSelectedListener
 {
-    private lateinit var drawer     : DrawerLayout
-    private lateinit var toggle     : ActionBarDrawerToggle
+    private lateinit var drawer : DrawerLayout
+    private lateinit var toggle : ActionBarDrawerToggle
 
     override fun onCreate( savedInstanceState: Bundle? )
     {
@@ -33,6 +36,7 @@ class MainActivity : MyActivity(), NavigationView.OnNavigationItemSelectedListen
 
         loadNavBarAndToolbar()
         loadVariables()
+        setOnClickListeners()
     }
 
     private fun loadNavBarAndToolbar()
@@ -61,7 +65,15 @@ class MainActivity : MyActivity(), NavigationView.OnNavigationItemSelectedListen
         buttonLogout        = menu.findItem( R.id.logout )
         buttonMySubjects    = menu.findItem( R.id.my_subject )
         buttonScan          = menu.findItem( R.id.qr_code )
-        buttonSubjects      = menu.findItem( R.id.subject )=
+        buttonSubjects      = menu.findItem( R.id.subject )
+        textMainScreen      = findViewById( R.id.text_main )
+    }
+
+    private fun setOnClickListeners()
+    {
+        buttonScanMain.setOnClickListener{
+            startScan()
+        }
     }
 
     override fun onPostCreate( savedInstanceState: Bundle? )
@@ -188,10 +200,19 @@ class MainActivity : MyActivity(), NavigationView.OnNavigationItemSelectedListen
         Log.i( "scan_link", link )
     }
 
-    private fun scanLink(link:String)
+    private fun scanLink(link:String )
     {
+        val urlString   = link + "&st_id=" + MyApplication.instance.user.id
+
+        if( ! URLUtil.isValidUrl( urlString ) )
+        {
+            Toast.makeText( applicationContext, R.string.error_in_link, Toast.LENGTH_LONG ).show()
+
+            return
+        }
+
         val client  = OkHttpClient()
-        val url     = URL(link + "&st_id=" + MyApplication.instance.user.id )
+        val url     = URL( urlString )
         val token   = MyApplication.instance.bearerToken
         val json    = MediaType.get( "application/json; charset=utf-8" )
         val body    = RequestBody.create( json, "" )
@@ -203,10 +224,15 @@ class MainActivity : MyActivity(), NavigationView.OnNavigationItemSelectedListen
             .post(body)
             .build()
 
-        client.newCall(request ).enqueue(object: Callback{
-            override fun onFailure(call: Call, e: IOException){}
+        client.newCall( request ).enqueue( object: Callback
+        {
+            override fun onFailure( call: Call, e: IOException )
+            {
+                Toast.makeText( applicationContext, R.string.error_in_link, Toast.LENGTH_LONG ).show()
+            }
 
-            override fun onResponse(call: Call, response: Response) {
+            override fun onResponse(call: Call, response: Response)
+            {
                 val jsonData = response.body()?.string()
                 val message  = Message(jsonData!!)
                 Log.i( "response", jsonData )
@@ -216,20 +242,20 @@ class MainActivity : MyActivity(), NavigationView.OnNavigationItemSelectedListen
                     runOnUiThread {
                         if ( message.message == "Lejárt az idő" )
                         {
-                            Toast.makeText(applicationContext, message.message, Toast.LENGTH_LONG).show()
+                            Toast.makeText( applicationContext, message.message, Toast.LENGTH_LONG ).show()
                             logout()
 
                             return@runOnUiThread
                         }
 
-                        Toast.makeText(applicationContext, message.message, Toast.LENGTH_LONG).show()
+                        Toast.makeText( applicationContext, message.message, Toast.LENGTH_LONG ).show()
                     }
 
                     return
                 }
 
                 runOnUiThread {
-                    Toast.makeText(applicationContext, message.message, Toast.LENGTH_LONG ).show()
+                    Toast.makeText( applicationContext, message.message, Toast.LENGTH_LONG ).show()
                 }
             }
         })
@@ -239,5 +265,15 @@ class MainActivity : MyActivity(), NavigationView.OnNavigationItemSelectedListen
     {
         super.onResume()
         setMenuItemVisibility()
+        setUserDetails()
+    }
+
+    private fun setUserDetails()
+    {
+        if( MyApplication.instance.isLoggedIn )
+        {
+            username.text    = MyApplication.instance.user.getName()
+            neptun_code.text = MyApplication.instance.user.neptun
+        }
     }
 }

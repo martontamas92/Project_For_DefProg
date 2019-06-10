@@ -5,6 +5,8 @@
     <string name="title_activity_subject">Tárgy választás</string>
     <string name="title_activity_my_subjects">Saját tárgyaim</string>
     <string name="scan">Beolvasás</string>
+    <string name="no_subjects">Nincsenek felvehető tárgyak.</string>
+    <string name="no_my_subjects">Nincsenek saját tárgyak.</string>
     <string name="my_subjects">Saját tárgyaim</string>
     <string name="login">Bejelentkezés</string>
     <string name="register">Regisztráció</string>
@@ -17,6 +19,7 @@
     <string name="add_subject">Új tárgy hozzáadása</string>
     <string name="add_subject_title">Biztosan szeretné hozzáadni a következő tárgyat?</string>
     <string name="add_subject_message">hozzáadása.</string>
+    <string name="main_page">Regisztráljon vagy jelentkezzen be!!!</string>
     <string name="yes">Igen</string>
     <string name="no">Nem</string>
 
@@ -43,5 +46,6 @@
     <string name="error_subjects">Hiba a tárgyak lekérésében</string>
     <string name="error_attend_subject">Hiba a tárgyfelvételben</string>
     <string name="error_token">Jelentkezz ki</string>
+    <string name="error_in_link">Rossz link</string>
     <string name="success">Sikeres</string>
 </resources>

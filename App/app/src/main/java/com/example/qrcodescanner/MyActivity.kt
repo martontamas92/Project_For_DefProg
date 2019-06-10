@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import com.example.qrcodescanner.activities.RegisterActivity
 import com.example.qrcodescanner.models.User
 
@@ -16,6 +17,7 @@ open class MyActivity : AppCompatActivity()
     lateinit var buttonLogout               : MenuItem
     lateinit var buttonScan                 : MenuItem
     lateinit var buttonScanMain             : Button
+    lateinit var textMainScreen             : TextView
     lateinit var buttonMySubjects           : MenuItem
     lateinit var buttonSubjects             : MenuItem
 
@@ -26,6 +28,7 @@ open class MyActivity : AppCompatActivity()
             buttonLogin.isVisible       = false
             buttonRegister.isVisible    = false
             buttonScanMain.visibility   = View.VISIBLE
+            textMainScreen.visibility   = View.GONE
             buttonLogout.isVisible      = true
             buttonSubjects.isVisible    = true
             buttonScan.isVisible        = true
@@ -36,6 +39,7 @@ open class MyActivity : AppCompatActivity()
             buttonLogin.isVisible       = true
             buttonRegister.isVisible    = true
             buttonScanMain.visibility   = View.GONE
+            textMainScreen.visibility   = View.VISIBLE
             buttonLogout.isVisible      = false
             buttonSubjects.isVisible    = false
             buttonScan.isVisible        = false

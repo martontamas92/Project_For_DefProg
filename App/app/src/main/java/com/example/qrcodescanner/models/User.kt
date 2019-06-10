@@ -23,7 +23,7 @@ class User
             this.neptun     = jsonObject.getJSONObject( "neptun" ).getString( "neptun" )
             val name        = jsonObject.getJSONObject( "name" )
             this.firstName  = name.getString( "firstName" )
-            this.lastName   = name.getString( "middleName" )
+            this.lastName   = name.getString( "lastName" )
         }
         catch ( e: Exception )
         {
@@ -38,5 +38,10 @@ class User
         this.lastName   = lastName
         this.neptun     = neptun
         this.username   = username
+    }
+
+    fun getName() : String
+    {
+        return this.lastName + " " + this.firstName
     }
 }

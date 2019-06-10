@@ -13,6 +13,7 @@ import com.example.qrcodescanner.MyActivity
 import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.MyPreference
 import com.example.qrcodescanner.R
+import com.example.qrcodescanner.models.Message
 import com.example.qrcodescanner.models.User
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_login.progress_bar
@@ -154,17 +155,23 @@ class LoginActivity : MyActivity()
             .post( fromBodyBuilder.build() )
             .build()
 
-        client.newCall( request ).enqueue( object : Callback {
+        client.newCall( request ).enqueue( object : Callback
+        {
             override fun onFailure(call: Call, e: IOException) {}
 
-            override fun onResponse(call: Call, response: Response) {
+            override fun onResponse(call: Call, response: Response)
+            {
                 val jsonData    = response.body()!!.string()
+
                 Log.i( "response", jsonData )
 
-                if (!response.isSuccessful){
+                if ( !response.isSuccessful )
+                {
                     runOnUiThread {
-                        Toast.makeText( applicationContext, R.string.error_login, Toast.LENGTH_SHORT  ).show()
+                        val message             = Message( jsonData )
                         progress_bar.visibility = View.GONE
+
+                        Toast.makeText( applicationContext, message.message, Toast.LENGTH_SHORT  ).show()
                     }
 
                     return

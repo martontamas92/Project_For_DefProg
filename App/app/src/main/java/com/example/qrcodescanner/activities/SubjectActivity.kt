@@ -104,12 +104,20 @@ class SubjectActivity : MyActivity()
                 }
 
                 Log.i( "response id", MyApplication.instance.user.id.toString() )
+                val subjectsArray = JSONArray( jsonData )
 
-                val jsonArray = JSONArray( jsonData )
+                runOnUiThread {
+                    no_subjects.visibility  = View.GONE
 
-                for ( i in 0..( jsonArray.length() -1 ) )
+                    if ( subjectsArray.length() == 0 )
+                    {
+                        no_subjects.visibility = View.VISIBLE
+                    }
+                }
+
+                for ( i in 0..( subjectsArray.length() -1 ) )
                 {
-                    val item = jsonArray.getJSONObject( i )
+                    val item = subjectsArray.getJSONObject( i )
 
                     subjectList.add( Subject( item ) )
 

@@ -167,12 +167,14 @@ class RegisterActivity : MyActivity()
             .post( body )
             .build()
 
-        client.newCall( request ).enqueue( object: Callback {
+        client.newCall( request ).enqueue( object: Callback
+        {
             override fun onFailure( call: Call, e: IOException ){}
 
-            override fun onResponse( call: Call, response: Response ) {
+            override fun onResponse( call: Call, response: Response )
+            {
                 val jsonData    = response.body()!!.string()
-                val message     = Message(jsonData)
+                val message     = Message( jsonData )
 
                 if ( !response.isSuccessful )
                 {
@@ -190,12 +192,15 @@ class RegisterActivity : MyActivity()
                         progress_bar.visibility = View.GONE
                     }
 
+                    Toast.makeText( applicationContext, message.message, Toast.LENGTH_LONG ).show()
+
                     return
                 }
 
-                Log.i("response", response.request().toString())
-                Log.i("response", response.message())
-                Log.i("response", response.isSuccessful.toString())
+                Log.i( "response", response.request().toString() )
+                Log.i( "response", jsonData )
+                Log.i( "response", response.message() )
+                Log.i( "response", response.isSuccessful.toString() )
 
                 finish()
                 runOnUiThread {
