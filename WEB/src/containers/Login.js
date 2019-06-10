@@ -4,6 +4,7 @@ import "./Login.css";
 import Axios from "axios";
 import qs from "qs";
 import { Redirect } from "react-router";
+import link from "./Root.js";
 
 export default class Login extends Component {
   constructor(props) {
@@ -42,7 +43,7 @@ export default class Login extends Component {
     const { uname, passwd, status } = this.state;
     try {
       const response = Axios.post(
-        "http://192.168.0.185:8080/WS/home/authentication/login",
+        "http://" + link + "/WS/home/authentication/login",
         requestBody,
         { headers: headers },
         { responseType: "json" }
