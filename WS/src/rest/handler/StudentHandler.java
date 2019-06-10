@@ -37,9 +37,10 @@ public class StudentHandler {
 	private SubjectController subjectRepository = new SubjectController();
 
 	@POST
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	//@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/registrate")
+	@Path("/registration")
 	public Response addStudent(String data) {
 
 		try {
@@ -87,86 +88,98 @@ public class StudentHandler {
 
 	}
 
-	/*
-	 * @POST
-	 *
-	 * @Consumes(MediaType.APPLICATION_JSON)
-	 *
-	 * @Produces(MediaType.APPLICATION_JSON)
-	 *
-	 * @Path("/attend") //@JWTTokenNeeded //goes to student public Response
-	 * attendLecture(String data) { try { ObjectMapper mapper = new ObjectMapper();
-	 * Map<String, Integer> map1 = mapper.readValue(data,
-	 * TypeFactory.defaultInstance().constructMapType(HashMap.class, String.class,
-	 * Integer.class)); Integer st_id = map1.get("st_id"); Map<String, Integer> map2
-	 * = mapper.readValue(data,
-	 * TypeFactory.defaultInstance().constructMapType(HashMap.class, String.class,
-	 * Integer.class)); Integer sj_id = map2.get("sj_id"); int a =
-	 * subjectRepository.attendLecture(st_id, sj_id);
-	 *
-	 * return Response.status(200).entity(new
-	 * Message("A jelentkezés sikerült").toString()).build(); } catch (Exception e)
-	 * { System.out.println(e.getMessage()); return Response.status(500).entity(new
-	 * Message("A jelentkezés nem sikerült " + e.getMessage()).toString()) .build();
-	 * }
-	 *
-	 * }
-	 *
-	 * @GET
-	 *
-	 * @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XHTML_XML })
-	 *
-	 * @Path("/student-subjectList") //@JWTTokenNeeded //goes to student public
-	 * Response getStudentSubject(@QueryParam("id") Integer id) { try { return
-	 * Response.status(200).entity(subjectRepository.allSubjectByStId(id)).build();
-	 * } catch (Exception e) { e.printStackTrace(); return
-	 * Response.status(500).entity(new Message(e.getMessage().toString())).build();
-	 *
-	 * } }
-	 *
-	 * @GET
-	 *
-	 * @Produces(MediaType.APPLICATION_JSON)
-	 *
-	 * @Path("/student-attendedClasses") //@JWTTokenNeeded //goes to student public
-	 * Response getAttendedSubjects(@QueryParam("id") Integer id) { try { return
-	 * Response.status(200).entity(subjectRepository.allLectures(id)).build(); //
-	 * query in progress } catch (Exception e) { e.getMessage();
-	 * e.printStackTrace(); return Response.status(500).entity(new
-	 * Message(e.getMessage().toString())).build(); } }
-	 *
-	 * @POST
-	 *
-	 * @Consumes(MediaType.APPLICATION_JSON)
-	 *
-	 * @Produces(MediaType.APPLICATION_JSON)
-	 *
-	 * @Path("/presence-list") //@JWTTokenNeeded //goes to student public Response
-	 * attendOnClass(@QueryParam("le_id") Integer le_id, @QueryParam("st_id")
-	 * Integer st_id) { try { /* ObjectMapper mapper = new ObjectMapper();
-	 * Map<String, Integer> map1 = mapper.readValue(data,
-	 * TypeFactory.defaultInstance() .constructMapType(HashMap.class, String.class,
-	 * Integer.class)); Integer st_id = map1.get("st_id"); Map<String, Integer> map2
-	 * = mapper.readValue(data, TypeFactory.defaultInstance()
-	 * .constructMapType(HashMap.class, String.class, Integer.class)); Integer le_id
-	 * = map2.get("le_id");
-	 *
-	 *
-	 * if(!subjectRepository.canAttend(le_id,st_id)) { return
-	 * Response.status(403).entity(new
-	 * Message("A jelentkezés nem lehetséges, mert a diák nem jelentkezett a kurzusra"
-	 * ).toString()) .build(); } if(subjectRepository.isAttend(le_id, st_id)) {
-	 * return Response.status(403).entity(new
-	 * Message("A jelentkezés nem lehetséges, mert a diák már jelentkezett").
-	 * toString()) .build(); } int a = subjectRepository.attendOnClass(st_id,
-	 * le_id); return Response.status(200).entity(new
-	 * Message("Jelentkezes sikeres!").toString()).build();
-	 *
-	 *
-	 * } catch (Exception e) { // TODO: handle exception return
-	 * Response.status(500).entity(new Message("A jelentkezés nem sikerült " +
-	 * e.getMessage()).toString()) .build(); }
-	 *
-	 * }
-	 */
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/attend")
+	@JWTTokenNeeded
+	// goes to student
+	public Response attendLecture(String data) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			Map<String, Integer> map1 = mapper.readValue(data,
+					TypeFactory.defaultInstance().constructMapType(HashMap.class, String.class, Integer.class));
+			Integer st_id = map1.get("st_id");
+			Map<String, Integer> map2 = mapper.readValue(data,
+					TypeFactory.defaultInstance().constructMapType(HashMap.class, String.class, Integer.class));
+			Integer sj_id = map2.get("sj_id");
+			int a = subjectRepository.attendLecture(st_id, sj_id);
+
+			return Response.status(200).entity(new Message("A jelentkezés sikerült").toString()).build();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return Response.status(500).entity(new Message("A jelentkezés nem sikerült " + e.getMessage()).toString())
+					.build();
+		}
+
+	}
+
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XHTML_XML })
+	@Path("/subjectList")
+	@JWTTokenNeeded
+	// goes to student
+	public Response getStudentSubject(@QueryParam("id") Integer id) {
+		try {
+			return Response.status(200).entity(subjectRepository.allSubjectByStId(id)).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.status(500).entity(new Message(e.getMessage().toString())).build();
+
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/attendedClasses")
+	@JWTTokenNeeded
+	// goes to student
+	public Response getAttendedSubjects(@QueryParam("id") Integer id) {
+		try {
+			return Response.status(200).entity(subjectRepository.allLectures(id)).build(); // query in progress
+		} catch (Exception e) {
+			e.getMessage();
+			e.printStackTrace();
+			return Response.status(500).entity(new Message(e.getMessage().toString())).build();
+		}
+	}
+
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/presence-list")
+	@JWTTokenNeeded
+	// goes to student
+	public Response attendOnClass(@QueryParam("le_id") Integer le_id, @QueryParam("st_id") Integer st_id) {
+		try {
+			/*
+			 * ObjectMapper mapper = new ObjectMapper(); Map<String, Integer> map1 =
+			 * mapper.readValue(data, TypeFactory.defaultInstance()
+			 * .constructMapType(HashMap.class, String.class, Integer.class)); Integer st_id
+			 * = map1.get("st_id"); Map<String, Integer> map2 = mapper.readValue(data,
+			 * TypeFactory.defaultInstance() .constructMapType(HashMap.class, String.class,
+			 * Integer.class)); Integer le_id = map2.get("le_id");
+			 */
+
+			if (!subjectRepository.canAttend(le_id, st_id)) {
+				return Response.status(403).entity(
+						new Message("A jelentkezés nem lehetséges, mert a diák nem jelentkezett a kurzusra").toString())
+						.build();
+			}
+			if (subjectRepository.isAttend(le_id, st_id)) {
+				return Response.status(403)
+						.entity(new Message("A jelentkezés nem lehetséges, mert a diák már jelentkezett").toString())
+						.build();
+			}
+			int a = subjectRepository.attendOnClass(st_id, le_id);
+			return Response.status(200).entity(new Message("Jelentkezes sikeres!").toString()).build();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			return Response.status(500).entity(new Message("A jelentkezés nem sikerült " + e.getMessage()).toString())
+					.build();
+		}
+
+	}
+
 }
