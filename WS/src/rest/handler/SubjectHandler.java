@@ -34,7 +34,7 @@ public class SubjectHandler {
 	// @JWTTokenNeeded
 	// goes to demonstrator
 	public Response registrate(String data) {
-
+		System.out.println(data);
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			Subject s;
@@ -76,7 +76,7 @@ public class SubjectHandler {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XHTML_XML })
 	@Path("/demonstrator-subjectList") //
-	// @JWTTokenNeeded
+	//@JWTTokenNeeded
 	// goes to demonstrator
 	public Response getSubjects(@QueryParam("id") Integer id) {
 		try {

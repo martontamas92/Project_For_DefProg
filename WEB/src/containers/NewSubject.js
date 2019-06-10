@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import link from "./Root.js";
 import {
   HelpBlock,
   FormGroup,
@@ -34,9 +35,10 @@ export default class NewSubject extends Component {
       selectedOption: null,
       options: [],
       qrValue: "",
-      id: "2",
+      id: "7",
       firstname: "Norbert",
-      lastname: "Szasz"
+      lastname: "Szasz",
+      subjectmajor: ""
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -46,7 +48,12 @@ export default class NewSubject extends Component {
   componentDidMount = () => {
     const loggedId = 10;
     Axios.get(
-      "http://localhost:8080/WS/home/subject/demonstrator-subjectList?id=2"
+      "http://" + link + "/WS/home/subject/demonstrator-subjectList?id=7",
+      {
+        headers: {
+          Authorization: "Bearer " + this.props.userStates.token
+        }
+      }
     ).then(response => {
       this.setState({
         options: response.data
@@ -73,10 +80,11 @@ export default class NewSubject extends Component {
     //const { email, password, middlename, firstname, lastname } = this.state;
     try {
       const response = Axios.post(
-        "http://localhost:8080/WS/home/subject/registrate",
+        "http://" + link + "/WS/home/subject/registrate",
         //"http://demo7358603.mockable.io/login",
         {
           subjectName: this.state.subname,
+          subjectMajor: this.state.subjectmajor,
           demonstrator: {
             id: this.state.id,
             name: {
@@ -104,7 +112,7 @@ export default class NewSubject extends Component {
   getQR = () => {
     const selectedFruit = this.selectedOption;
     Axios.post(
-      "http://demo7358603.mockable.io/qr",
+      "http://" + link + "/WS/home/subject/create-lecture",
       // "http://localhost:8080/WS/home/subject/create-lecture",
       {
         subjectName: this.state.selectedOption.value,
@@ -119,7 +127,7 @@ export default class NewSubject extends Component {
       {
         responseType: "json",
         headers: {
-          token: this.props.userStates.token
+          Authorization: "Bearer " + this.props.userStates.token
         }
       }
     )
@@ -159,6 +167,15 @@ export default class NewSubject extends Component {
                     autoFocus
                     type="text"
                     value={this.state.subname}
+                    onChange={this.handleChange}
+                  />
+                </FormGroup>
+                <FormGroup controlId="subjectmajor" bsSize="large">
+                  <ControlLabel>Szak neve</ControlLabel>
+                  <FormControl
+                    autoFocus
+                    type="text"
+                    value={this.state.subjectmajor}
                     onChange={this.handleChange}
                   />
                 </FormGroup>

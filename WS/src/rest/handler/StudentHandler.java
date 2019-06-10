@@ -37,33 +37,32 @@ public class StudentHandler {
 	private SubjectController subjectRepository = new SubjectController();
 
 	@POST
-	@Consumes({ MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_JSON })
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/registrate")
-	public Response addStudent(@FormParam("uname") String uname, @FormParam("passwd") String passwd,
-			@FormParam("data") String data) {
+	public Response addStudent(String data) {
 
 		try {
 //			System.out.println(uname);
 //			System.out.println(passwd);
 //			System.out.println(data);
-			ObjectMapper mapper = new ObjectMapper();
-			Student st = mapper.readValue(data, Student.class);
-//			JSONObject json = new JSONObject(data);
+//			ObjectMapper mapper = new ObjectMapper();
+//			Student st = mapper.readValue(data, Student.class);
+			JSONObject json = new JSONObject(data);
 //
-//			String firstName = json.getJSONObject("Name").getString("firstName");
-//			String lastName = json.getJSONObject("Name").getString("lastName");
-//			String neptun = json.getJSONObject("Neptun").getString("neptun");
-//			String passwd = json.getJSONObject("Auth").getString("passwd");
-//			String uname = json.getJSONObject("Auth").getString("uname");
+			String firstName = json.getJSONObject("Name").getString("firstName");
+			String lastName = json.getJSONObject("Name").getString("lastName");
+			String neptun = json.getJSONObject("Neptun").getString("neptun");
+			String passwd = json.getJSONObject("Auth").getString("passwd");
+			String uname = json.getJSONObject("Auth").getString("uname");
 //
-//			Name name = Name.NameBuilder(firstName, lastName);
-//			Neptun_Code nept = Neptun_Code.buildNeptun_Code(neptun);
+			Name name = Name.NameBuilder(firstName, lastName);
+			Neptun_Code nept = Neptun_Code.buildNeptun_Code(neptun);
 			UserName userName = UserName.userNameBuilder(uname);
 			Password password = Password.passwordBuilder(passwd);
 
 			ArrayList<Student> students = studentRepository.allStudent();
-//			Student st = Student.studentBuilder(name, nept);
+			Student st = Student.studentBuilder(name, nept);
 
 			if (students.contains(st)) {
 				return Response.status(403).type(MediaType.APPLICATION_JSON)

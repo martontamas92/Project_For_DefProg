@@ -13,7 +13,7 @@ public class Neptun_Code {
 		if(canBuild(neptun)) {
 			this.neptun = neptun;
 		}else {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("A neptunkód nem lehet üres, tartalmaznia kell legalább egy számot és legalább 8 karakter kell hogy legyen");
 		}
 
 	}

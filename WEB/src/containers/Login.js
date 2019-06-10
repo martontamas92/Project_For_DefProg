@@ -2,14 +2,17 @@ import React, { Component } from "react";
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import "./Login.css";
 import Axios from "axios";
+import qs from "qs";
 import { Redirect } from "react-router";
+import link from "./Root.js";
 
 export default class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: "",
-      password: ""
+      uname: "",
+      passwd: "",
+      status: "demonstrator"
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -17,7 +20,7 @@ export default class Login extends Component {
   }
 
   validateForm() {
-    return this.state.email.length > 0 && this.state.password.length > 0;
+    return this.state.uname.length > 0 && this.state.passwd.length > 0;
   }
 
   handleChange = event => {
@@ -28,18 +31,25 @@ export default class Login extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-
-    const { email, password } = this.state;
+    const headers = {
+      Authorization: "Bearer",
+      "Content-Type": "application/x-www-form-urlencoded"
+    };
+    const requestBody = qs.stringify({
+      uname: this.state.uname,
+      passwd: this.state.passwd,
+      status: this.state.status
+    });
+    const { uname, passwd, status } = this.state;
     try {
       const response = Axios.post(
-        "http://demo7358603.mockable.io/login",
-        {
-          email,
-          password
-        },
+        "http://" + link + "/WS/home/authentication/login",
+        requestBody,
+        { headers: headers },
         { responseType: "json" }
       ).then(response => {
         this.props.updateUserStates(response.data);
+        console.log(response.headers);
       });
     } catch (err) {
       console.log(err);
@@ -53,19 +63,19 @@ export default class Login extends Component {
     return (
       <div className="Login">
         <form onSubmit={this.handleSubmit}>
-          <FormGroup controlId="email" bsSize="large">
+          <FormGroup controlId="uname" bsSize="large">
             <ControlLabel>Email cím</ControlLabel>
             <FormControl
               autoFocus
               type="email"
-              value={this.state.email}
+              value={this.state.uname}
               onChange={this.handleChange}
             />
           </FormGroup>
-          <FormGroup controlId="password" bsSize="large">
+          <FormGroup controlId="passwd" bsSize="large">
             <ControlLabel>Jelszó</ControlLabel>
             <FormControl
-              value={this.state.password}
+              value={this.state.passwd}
               onChange={this.handleChange}
               type="password"
             />

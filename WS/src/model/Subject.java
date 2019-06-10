@@ -34,10 +34,11 @@ public class Subject {
 	 * subjectName; this.demonstrator = demonstrator; }
 	 */
 
-	public Subject(@NotNull String subjectName, @NotNull Demonstrator demonstrator, @NotNull String subjectMajor) {
+	public Subject(@NotNull String subjectName,@NotNull String subjectMajor, @NotNull Demonstrator demonstrator) {
 		super();
-		this.subjectMajor = subjectMajor;
+
 		this.subjectName = subjectName;
+		this.subjectMajor = subjectMajor;
 		this.demonstrator = demonstrator;
 	}
 

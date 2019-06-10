@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import business_model.KeyGenerator;
+import business_model.Message;
 import business_model.SimpleKeyGenerator;
 import io.jsonwebtoken.Jwts;
 @Provider
@@ -52,7 +53,7 @@ public class JWTTokenNeededFilter implements ContainerRequestFilter {
 
         } catch (Exception e) {
         	System.out.println("#### invalid token : " + token);
-            requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
+            requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity(new Message("Lejárt az idõ").toString()).build());
         }
     }
 

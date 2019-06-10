@@ -11,7 +11,12 @@ class App extends Component {
     super(props);
 
     let initialUserStates = {
-      token: ""
+      token: "",
+      demonstrator: "",
+      id: "",
+      name: "",
+      firstName: "",
+      lastName: ""
     };
     const savedUserStates = localStorage.getItem("userStates");
     //localStorage.clear();

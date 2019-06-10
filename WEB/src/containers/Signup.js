@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import link from "./Root";
 import {
   HelpBlock,
   FormGroup,
@@ -53,7 +54,7 @@ export default class Signup extends Component {
     //const { email, password, middlename, firstname, lastname } = this.state;
     try {
       const response = Axios.post(
-        "http://localhost:8080/WS/home/demonstrator/registrate",
+        "http://" + link + "/WS/home/demonstrator/registrate",
         //"http://demo7358603.mockable.io/login",
         {
           Name: {
