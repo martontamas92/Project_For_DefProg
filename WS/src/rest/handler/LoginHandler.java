@@ -28,6 +28,7 @@ import business_model.Message;
 import business_model.Password;
 import business_model.SimpleKeyGenerator;
 import business_model.UserName;
+import business_model.WebResponse;
 import entity.controller.DemonstratorAuthController;
 import entity.controller.DemonstratorController;
 import entity.controller.StudentAuthController;
@@ -80,6 +81,8 @@ public class LoginHandler {
 //			System.out.println("demauth:" + authenticateDemonstrator(uname,passwd));
 //			System.out.println("studauth:" + authenticateStudent(uname,passwd));
 			// System.out.println(issueToken(uname));
+			UserName uname = UserName.userNameBuilder(username);
+			Password passwd = Password.passwordBuilder(password);
 			String token = issueToken(uname);
 //			System.out.println("token:" + token);
 
@@ -93,8 +96,9 @@ public class LoginHandler {
 			if (status.equals("demonstrator") && authenticateDemonstrator(uname, passwd)) {
 //				System.out.println("dem auth ok");
 				Integer id = demonstratorAuthRepository.getDemonstratorId(uname.getUname());
-				Demonstrator d = demonstratorRepository.findDemonstrator(id);
-				return Response.ok().header(AUTHORIZATION, "Bearer " + token).entity(d).build();
+				Demonstrator demonstrator = demonstratorRepository.findDemonstrator(id);
+				WebResponse wr = new WebResponse(token, demonstrator);
+				return Response.ok().header(AUTHORIZATION, "Bearer " + token).entity(wr).build();
 			}
 			return Response.status(UNAUTHORIZED).entity(new Message("Hibás felhasználónév vagy jelszó!").toString())
 					.build();
@@ -158,7 +162,7 @@ public class LoginHandler {
 	                .setSubject(usname.getUname())
 	                .setIssuer(uriInfo.getAbsolutePath().toString())
 	                .setIssuedAt(new Date())
-	                .setExpiration(toDate(LocalDateTime.now().plusMinutes(15L)))
+	                .setExpiration(toDate(LocalDateTime.now().plusMinutes(30L)))
 	                .signWith(SignatureAlgorithm.HS512, key)
 	                .compact();
 	       // System.out.println("#### generating token for a key : " + jwtToken + " - " + key);
