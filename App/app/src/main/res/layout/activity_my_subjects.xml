@@ -20,6 +20,17 @@
                 app:layout_scrollFlags="scroll|enterAlways"/>
     </android.support.design.widget.AppBarLayout>
 
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:id="@+id/no_my_subjects"
+            android:visibility="gone"
+            android:textStyle="bold"
+            android:textColor="@color/colorRed"
+            android:layout_marginTop="20dp"
+            android:text="@string/no_my_subjects"/>
+
     <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

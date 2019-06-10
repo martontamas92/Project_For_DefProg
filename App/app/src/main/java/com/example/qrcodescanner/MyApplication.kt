@@ -18,11 +18,11 @@ class MyApplication : Application()
     companion object
     {
         val URL                 = "http://192.168.0.185:8080/WS/home/"
-        val REGISTER            = "student/registrate"
+        val REGISTER            = "student/registration"
         val LOGIN               = "authentication/login"
-        val SUBJECTSGETTER      = "subject/student-subjectList"
-        val SUBJECTATTEND       = "subject/attend"
-        val MYSUBJECTSGETTER    = "subject/student-attendedClasses"
+        val SUBJECTSGETTER      = "student/subjectList"
+        val SUBJECTATTEND       = "student/attend"
+        val MYSUBJECTSGETTER    = "student/attendedClasses"
         lateinit var instance   : MyApplication
             private set
     }

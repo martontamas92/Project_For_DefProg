@@ -1,7 +1,5 @@
 package com.example.qrcodescanner.activities
 
-import android.support.v7.app.AppCompatActivity
-import android.os.AsyncTask
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
@@ -10,33 +8,32 @@ import android.widget.TextView
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.widget.Toast
+import com.example.qrcodescanner.MyActivity
 import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
+import com.example.qrcodescanner.models.Message
 import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.activity_register.email
 import kotlinx.android.synthetic.main.activity_register.email_sign_in_button
 import kotlinx.android.synthetic.main.activity_register.password
 import okhttp3.*
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
 import org.json.JSONObject
 import java.io.IOException
 import java.net.URL
 
-class RegisterActivity : AppCompatActivity()
+class RegisterActivity : MyActivity()
 {
     private lateinit var firstNameStr       : String
-    private lateinit var middleNameStr      : String
     private lateinit var lastNameStr        : String
     private lateinit var neptunCodeStr      : String
     private lateinit var emailStr           : String
     private lateinit var passwordStr        : String
     private lateinit var confirmPasswordStr : String
-    //private var mAuthTask: RegisterTask?    = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+    override fun onCreate( savedInstanceState: Bundle? )
+    {
+        super.onCreate( savedInstanceState )
+        setContentView( R.layout.activity_register )
 
         loadToolbar()
         password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
@@ -45,6 +42,7 @@ class RegisterActivity : AppCompatActivity()
                 attemptRegister()
                 return@OnEditorActionListener true
             }
+
             false
         })
 
@@ -61,7 +59,6 @@ class RegisterActivity : AppCompatActivity()
     private fun attemptRegister()
     {
         first_name.error        = null
-        middle_name.error       = null
         last_name.error         = null
         neptun_code.error       = null
         email.error             = null
@@ -69,7 +66,6 @@ class RegisterActivity : AppCompatActivity()
         password_confirm.error  = null
 
         firstNameStr            = first_name.text.toString()
-        middleNameStr           = middle_name.text.toString()
         lastNameStr             = last_name.text.toString()
         neptunCodeStr           = neptun_code.text.toString()
         emailStr                = email.text.toString()
@@ -171,28 +167,46 @@ class RegisterActivity : AppCompatActivity()
             .post( body )
             .build()
 
+        client.newCall( request ).enqueue( object: Callback
+        {
+            override fun onFailure( call: Call, e: IOException ){}
 
-        client.newCall( request ).enqueue( object : Callback {
-            override fun onFailure(call: Call, e: IOException) {}
+            override fun onResponse( call: Call, response: Response )
+            {
+                val jsonData    = response.body()!!.string()
+                val message     = Message( jsonData )
 
-            override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful){
+                if ( !response.isSuccessful )
+                {
                     runOnUiThread {
-                        Toast.makeText( applicationContext, R.string.error_registration, Toast.LENGTH_SHORT  ).show()
+                        if ( message.message == "Lejárt az idő" )
+                        {
+                            Toast.makeText(applicationContext, message.message, Toast.LENGTH_LONG).show()
+                            logout()
+
+                            return@runOnUiThread
+                        }
+
+                        Toast.makeText( applicationContext, message.message, Toast.LENGTH_LONG ).show()
+
                         progress_bar.visibility = View.GONE
                     }
+
+                    Toast.makeText( applicationContext, message.message, Toast.LENGTH_LONG ).show()
 
                     return
                 }
 
                 Log.i( "response", response.request().toString() )
-                //Log.i( "response", response.body()!!.string() )
+                Log.i( "response", jsonData )
                 Log.i( "response", response.message() )
                 Log.i( "response", response.isSuccessful.toString() )
 
                 finish()
                 runOnUiThread {
-                    Toast.makeText( applicationContext, R.string.success, Toast.LENGTH_SHORT  ).show()
+                    Toast.makeText( applicationContext, R.string.success, Toast.LENGTH_SHORT ).show()
+
+                    progress_bar.visibility = View.GONE
                 }
             }
         })
@@ -203,7 +217,6 @@ class RegisterActivity : AppCompatActivity()
         var jsonObject = JSONObject(
             """{"Name": {
                 |       "firstName": "$firstNameStr",
-                |       "middleName": "$middleNameStr",
                 |       "lastName": "$lastNameStr"
                 |   },
                 |   "Neptun": {

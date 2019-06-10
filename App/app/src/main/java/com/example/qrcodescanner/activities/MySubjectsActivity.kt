@@ -1,7 +1,5 @@
 package com.example.qrcodescanner.activities
 
-import android.os.AsyncTask
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -10,25 +8,25 @@ import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.example.qrcodescanner.MyActivity
 import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
 import com.example.qrcodescanner.adapters.MySubjectAdapter
 import com.example.qrcodescanner.models.Message
 import com.example.qrcodescanner.models.MySubject
 import kotlinx.android.synthetic.main.activity_my_subjects.*
+import kotlinx.android.synthetic.main.activity_my_subjects.progress_bar
+import kotlinx.android.synthetic.main.activity_my_subjects.swipe_container
 import okhttp3.*
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
 import org.json.JSONArray
 import java.io.IOException
 import java.net.URL
 
-class MySubjectsActivity : AppCompatActivity()
+class MySubjectsActivity : MyActivity()
 {
     private lateinit var recyclerView           : RecyclerView
     private lateinit var recyclerViewAdapter    : MySubjectAdapter
     var mySubjectList                           = ArrayList<MySubject>()
-    //private var mySubjectsGetterTask            : MySubjectsGetterTask? = null
 
     override fun onCreate( savedInstanceState: Bundle? )
     {
@@ -87,21 +85,28 @@ class MySubjectsActivity : AppCompatActivity()
             .url( url )
             .build()
 
-        client.newCall( request ).enqueue( object : Callback {
-            override fun onFailure(call: Call, e: IOException) {}
+        client.newCall( request ).enqueue( object : Callback
+        {
+            override fun onFailure( call: Call, e: IOException ){}
 
-            override fun onResponse(call: Call, response: Response) {
-                val jsonData = response.body()?.string()
+            override fun onResponse( call: Call, response: Response )
+            {
+                val jsonData    = response.body()?.string()
+
                 Log.i( "response", jsonData )
 
-                if (!response.isSuccessful){
+                if ( !response.isSuccessful )
+                {
+                    val message = Message( jsonData!! )
+
                     runOnUiThread {
-                        var message = Message(jsonData!!)
-                        if (message.message == "Lejárt az idő")
+                        if ( message.message == "Lejárt az idő" )
                         {
-                            Toast.makeText( applicationContext, R.string.error_token, Toast.LENGTH_SHORT  ).show()
+                            Toast.makeText( applicationContext, message.message, Toast.LENGTH_SHORT  ).show()
                         }
-                        Toast.makeText( applicationContext, R.string.error_my_subjects, Toast.LENGTH_SHORT  ).show()
+
+                        Toast.makeText( applicationContext, message.message, Toast.LENGTH_SHORT  ).show()
+
                         progress_bar.visibility = View.GONE
                     }
 
@@ -110,11 +115,19 @@ class MySubjectsActivity : AppCompatActivity()
 
                 Log.i( "response id", MyApplication.instance.user.id.toString() )
 
-                val jsonArray = JSONArray( jsonData )
+                val mySubjectsArray = JSONArray( jsonData )
 
-                for ( i in 0..( jsonArray.length() -1 ) )
+                runOnUiThread {
+                    no_my_subjects.visibility  = View.GONE
+
+                    if ( mySubjectsArray.length() == 0 )
+                    {
+                        no_my_subjects.visibility = View.VISIBLE
+                    }
+                }
+                for ( i in 0..( mySubjectsArray.length() -1 ) )
                 {
-                    val item = jsonArray.getJSONObject( i )
+                    val item = mySubjectsArray.getJSONObject( i )
 
                     mySubjectList.add( MySubject( item ) )
 

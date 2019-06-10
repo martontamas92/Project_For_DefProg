@@ -71,16 +71,10 @@ public class LoginHandler {
 			@FormParam("status") String status) {
 
 		try {
-//			UserName uname = UserName.userNameBuilder(username);
-//			Password passwd = Password.passwordBuilder(password);
-			System.out.println("status: " + status);
-			System.out.println("username: " + username);
-			System.out.println("passwd: " + password);
-//			System.out.println("is student: " + status.equals("student"));
-//			System.out.println("is demonstrator: " + status.equals("demonstrator"));
-//			System.out.println("demauth:" + authenticateDemonstrator(uname,passwd));
-//			System.out.println("studauth:" + authenticateStudent(uname,passwd));
-			// System.out.println(issueToken(uname));
+
+//			System.out.println("status: " + status);
+//			System.out.println("username: " + username);
+//			System.out.println("passwd: " + password);
 			UserName uname = UserName.userNameBuilder(username);
 			Password passwd = Password.passwordBuilder(password);
 			String token = issueToken(uname);
@@ -91,12 +85,14 @@ public class LoginHandler {
 				// System.out.println(studentAuthRepository.getStudentId(uname.getUname()));
 				Integer id = studentAuthRepository.getStudentId(uname.getUname());
 				Student st = studentRepository.findStudent(id);
+//				String token = issueToken(uname);
 				return Response.ok().header(AUTHORIZATION, "Bearer " + token).entity(st).build();
 			}
 			if (status.equals("demonstrator") && authenticateDemonstrator(uname, passwd)) {
-//				System.out.println("dem auth ok");
+
 				Integer id = demonstratorAuthRepository.getDemonstratorId(uname.getUname());
 				Demonstrator demonstrator = demonstratorRepository.findDemonstrator(id);
+//				String token = issueToken(uname);
 				WebResponse wr = new WebResponse(token, demonstrator);
 				return Response.ok().header(AUTHORIZATION, "Bearer " + token).entity(wr).build();
 			}

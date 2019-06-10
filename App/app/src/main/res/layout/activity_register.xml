@@ -53,22 +53,6 @@
                         android:hint="@string/prompt_first_name"
                         android:inputType="text"
                         android:maxLines="1"
-                        android:text="Hunor"
-                        android:singleLine="true"/>
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                <AutoCompleteTextView
-                        android:id="@+id/middle_name"
-                        android:text="D.H."
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/prompt_middle_name"
-                        android:inputType="text"
-                        android:maxLines="1"
                         android:singleLine="true"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -78,7 +62,6 @@
 
                 <AutoCompleteTextView
                         android:id="@+id/last_name"
-                        android:text="Konczey"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/prompt_last_name"
@@ -98,7 +81,6 @@
                         android:hint="@string/prompt_neptun_code"
                         android:inputType="text"
                         android:maxLines="1"
-                        android:text="ETAJJ7"
                         android:singleLine="true"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -111,7 +93,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/prompt_email"
-                        android:text="hunorkonczey@gmail.com"
                         android:inputType="textEmailAddress"
                         android:maxLines="1"
                         android:singleLine="true"/>
@@ -132,7 +113,6 @@
                         android:imeOptions="actionUnspecified"
                         android:inputType="textPassword"
                         android:maxLines="1"
-                        android:text="asdasdasd"
                         android:singleLine="true"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -151,7 +131,6 @@
                         android:imeOptions="actionUnspecified"
                         android:inputType="textPassword"
                         android:maxLines="1"
-                        android:text="asdasdasd"
                         android:singleLine="true"/>
             </android.support.design.widget.TextInputLayout>
 

@@ -8,7 +8,6 @@ class User
 {
     var id: Int?            = null
     var firstName: String?  = null
-    var middleName: String? = null
     var lastName: String?   = null
     var neptun: String?     = null
     var username: String?   = null
@@ -24,8 +23,7 @@ class User
             this.neptun     = jsonObject.getJSONObject( "neptun" ).getString( "neptun" )
             val name        = jsonObject.getJSONObject( "name" )
             this.firstName  = name.getString( "firstName" )
-            this.middleName = name.getString( "firstName" )
-            this.lastName   = name.getString( "middleName" )
+            this.lastName   = name.getString( "lastName" )
         }
         catch ( e: Exception )
         {
@@ -33,13 +31,17 @@ class User
         }
     }
 
-    constructor( id: Int, firstName: String, middleName: String, lastName: String, neptun: String, username: String )
+    constructor( id: Int, firstName: String, lastName: String, neptun: String, username: String )
     {
         this.id         = id
         this.firstName  = firstName
-        this.middleName = middleName
         this.lastName   = lastName
         this.neptun     = neptun
         this.username   = username
+    }
+
+    fun getName() : String
+    {
+        return this.lastName + " " + this.firstName
     }
 }

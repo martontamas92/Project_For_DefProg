@@ -2,8 +2,6 @@ package com.example.qrcodescanner.activities
 
 import android.content.Intent
 import android.content.res.Configuration
-import android.os.AsyncTask
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -13,32 +11,23 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.webkit.URLUtil
 import android.widget.Toast
+import com.example.qrcodescanner.MyActivity
 import com.example.qrcodescanner.MyApplication
 import com.example.qrcodescanner.R
 import com.example.qrcodescanner.models.Message
-import com.example.qrcodescanner.models.MySubject
-import com.example.qrcodescanner.models.User
 import com.google.zxing.integration.android.IntentIntegrator
-import kotlinx.android.synthetic.main.activity_my_subjects.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 import okhttp3.*
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
-import org.json.JSONArray
 import java.io.IOException
 import java.net.URL
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener
+class MainActivity : MyActivity(), NavigationView.OnNavigationItemSelectedListener
 {
-    private lateinit var drawer                     : DrawerLayout
-    private lateinit var toggle                     : ActionBarDrawerToggle
-    private lateinit var buttonLogin                : MenuItem
-    private lateinit var buttonRegister             : MenuItem
-    private lateinit var buttonLogout               : MenuItem
-    private lateinit var buttonScan                 : MenuItem
-    private lateinit var buttonMySubjects           : MenuItem
-    private lateinit var buttonSubjects             : MenuItem
+    private lateinit var drawer : DrawerLayout
+    private lateinit var toggle : ActionBarDrawerToggle
 
     override fun onCreate( savedInstanceState: Bundle? )
     {
@@ -47,6 +36,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         loadNavBarAndToolbar()
         loadVariables()
+        setOnClickListeners()
     }
 
     private fun loadNavBarAndToolbar()
@@ -70,11 +60,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val navigationView  = findViewById<NavigationView>( R.id.nav_view )
         val menu            = navigationView.menu
         buttonLogin         = menu.findItem( R.id.login )
+        buttonScanMain      = findViewById( R.id.scan )
         buttonRegister      = menu.findItem( R.id.register )
         buttonLogout        = menu.findItem( R.id.logout )
         buttonMySubjects    = menu.findItem( R.id.my_subject )
         buttonScan          = menu.findItem( R.id.qr_code )
         buttonSubjects      = menu.findItem( R.id.subject )
+        textMainScreen      = findViewById( R.id.text_main )
+    }
+
+    private fun setOnClickListeners()
+    {
+        buttonScanMain.setOnClickListener{
+            startScan()
+        }
     }
 
     override fun onPostCreate( savedInstanceState: Bundle? )
@@ -175,13 +174,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         startActivity( intent )
     }
 
-    private fun startRegisterActivity()
-    {
-        val intent = Intent( this, RegisterActivity::class.java )
-
-        startActivity( intent )
-    }
-
     override fun onActivityResult( requestCode: Int, resultCode: Int, data: Intent? )
     {
         super.onActivityResult( requestCode, resultCode, data )
@@ -208,10 +200,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Log.i( "scan_link", link )
     }
 
-    private fun scanLink(link:String)
+    private fun scanLink(link:String )
     {
+        val urlString   = link + "&st_id=" + MyApplication.instance.user.id
+
+        if( ! URLUtil.isValidUrl( urlString ) )
+        {
+            Toast.makeText( applicationContext, R.string.error_in_link, Toast.LENGTH_LONG ).show()
+
+            return
+        }
+
         val client  = OkHttpClient()
-        val url     = URL(link + "&st_id=" + MyApplication.instance.user.id )
+        val url     = URL( urlString )
         val token   = MyApplication.instance.bearerToken
         val json    = MediaType.get( "application/json; charset=utf-8" )
         val body    = RequestBody.create( json, "" )
@@ -223,32 +224,38 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .post(body)
             .build()
 
-        client.newCall( request ).enqueue( object : Callback {
-            override fun onFailure(call: Call, e: IOException) {}
+        client.newCall( request ).enqueue( object: Callback
+        {
+            override fun onFailure( call: Call, e: IOException )
+            {
+                Toast.makeText( applicationContext, R.string.error_in_link, Toast.LENGTH_LONG ).show()
+            }
 
-            override fun onResponse(call: Call, response: Response) {
-                val jsonData    = response.body()?.string()
-                val message     = Message(jsonData!!)
+            override fun onResponse(call: Call, response: Response)
+            {
+                val jsonData = response.body()?.string()
+                val message  = Message(jsonData!!)
                 Log.i( "response", jsonData )
 
-                if (!response.isSuccessful){
+                if ( !response.isSuccessful )
+                {
                     runOnUiThread {
-                        Log.i( "response", "message " + message.message )
-
-                        if (message.message == "Lejárt az idő")
+                        if ( message.message == "Lejárt az idő" )
                         {
-                            Toast.makeText(applicationContext, message.message, Toast.LENGTH_LONG).show()
+                            Toast.makeText( applicationContext, message.message, Toast.LENGTH_LONG ).show()
+                            logout()
+
+                            return@runOnUiThread
                         }
 
-                        Toast.makeText(applicationContext, message.message, Toast.LENGTH_LONG).show()
+                        Toast.makeText( applicationContext, message.message, Toast.LENGTH_LONG ).show()
                     }
 
                     return
                 }
 
                 runOnUiThread {
-                    Toast.makeText(applicationContext, message.message, Toast.LENGTH_LONG ).show()
-                    Log.i( "response", "message " + message.message )
+                    Toast.makeText( applicationContext, message.message, Toast.LENGTH_LONG ).show()
                 }
             }
         })
@@ -258,36 +265,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     {
         super.onResume()
         setMenuItemVisibility()
+        setUserDetails()
     }
 
-    private fun setMenuItemVisibility()
+    private fun setUserDetails()
     {
         if( MyApplication.instance.isLoggedIn )
         {
-            buttonLogin.isVisible       = false
-            buttonRegister.isVisible    = false
-            buttonLogout.isVisible      = true
-            buttonSubjects.isVisible    = true
-            buttonScan.isVisible        = true
-            buttonMySubjects.isVisible  = true
+            username.text    = MyApplication.instance.user.getName()
+            neptun_code.text = MyApplication.instance.user.neptun
         }
-        else
-        {
-            buttonLogin.isVisible       = true
-            buttonRegister.isVisible    = true
-            buttonLogout.isVisible      = false
-            buttonSubjects.isVisible    = false
-            buttonScan.isVisible        = false
-            buttonMySubjects.isVisible  = false
-        }
-    }
-
-    private fun logout()
-    {
-        MyApplication.instance.isLoggedIn   = false
-        MyApplication.instance.bearerToken  = ""
-        MyApplication.instance.user         = User()
-
-        setMenuItemVisibility()
     }
 }

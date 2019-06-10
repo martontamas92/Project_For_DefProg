@@ -1,6 +1,5 @@
 package com.example.qrcodescanner.activities
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -12,6 +11,7 @@ import com.example.qrcodescanner.models.Subject
 import com.example.qrcodescanner.R
 import android.view.View
 import android.widget.Toast
+import com.example.qrcodescanner.MyActivity
 import com.example.qrcodescanner.MyApplication
 import kotlinx.android.synthetic.main.activity_subject.*
 import org.json.JSONArray
@@ -20,7 +20,7 @@ import okhttp3.*
 import java.io.IOException
 
 
-class SubjectActivity : AppCompatActivity()
+class SubjectActivity : MyActivity()
 {
     private lateinit var recyclerView           : RecyclerView
     private lateinit var recyclerViewAdapter    : SubjectAdapter
@@ -84,15 +84,19 @@ class SubjectActivity : AppCompatActivity()
             .build()
 
         client.newCall( request ).enqueue( object : Callback {
-            override fun onFailure(call: Call, e: IOException) {}
+            override fun onFailure( call: Call, e: IOException ) {}
 
-            override fun onResponse(call: Call, response: Response) {
+            override fun onResponse( call: Call, response: Response )
+            {
                 val jsonData = response.body()!!.string()
+
                 Log.i( "response", jsonData )
 
-                if (!response.isSuccessful){
+                if ( !response.isSuccessful )
+                {
                     runOnUiThread {
-                        Toast.makeText( applicationContext, R.string.error_subjects, Toast.LENGTH_SHORT  ).show()
+                        Toast.makeText( applicationContext, R.string.error_subjects, Toast.LENGTH_SHORT ).show()
+
                         progress_bar.visibility = View.GONE
                     }
 
@@ -100,11 +104,20 @@ class SubjectActivity : AppCompatActivity()
                 }
 
                 Log.i( "response id", MyApplication.instance.user.id.toString() )
-                val jsonArray = JSONArray( jsonData )
+                val subjectsArray = JSONArray( jsonData )
 
-                for ( i in 0..( jsonArray.length() -1 ) )
+                runOnUiThread {
+                    no_subjects.visibility  = View.GONE
+
+                    if ( subjectsArray.length() == 0 )
+                    {
+                        no_subjects.visibility = View.VISIBLE
+                    }
+                }
+
+                for ( i in 0..( subjectsArray.length() -1 ) )
                 {
-                    var item = jsonArray.getJSONObject( i )
+                    val item = subjectsArray.getJSONObject( i )
 
                     subjectList.add( Subject( item ) )
 
