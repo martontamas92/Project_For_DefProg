@@ -267,13 +267,16 @@ public class SubjectController implements ISubject {
 
 	public ArrayList<HashMap<String, String>> absences(Integer id) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 		ArrayList<HashMap<String, String>> resultList = new ArrayList<>();
-		String sql = "select st_neptun, CONCAT(st_fn, \" \" , st_ln) as nev, \"RESZTVETT\" as attended from student_st join presence_pe on st_id = pe_st_id where pe_le_id = ?\r\n" +
-				"UNION\r\n" +
-				"select st_neptun, CONCAT(st_fn, \" \" , st_ln) as nev, \"HIANYZOTT\" as attended from student_st join presence_pe on st_id != pe_st_id where pe_le_id = ?;\r\n";
+		String sql = "select st_neptun, CONCAT(st_fn, \" \" , st_ln) as nev, \"RESZTVETT\" as attended from student_st where st_id in( select pe_st_id from presence_pe where pe_le_id = ?) and st_id in ( select at_st_id from sj_st_attend_at join lecture_le on at_sj_id = le_sj_id where le_id = ?)\r\n" +
+				"UNION all\r\n" +
+				"select st_neptun, CONCAT(st_fn, \" \" , st_ln) as nev, \"HIANYZOTT\" as attended from student_st where st_id not in( select pe_st_id from presence_pe where pe_le_id = ?) and st_id in ( select at_st_id from sj_st_attend_at join lecture_le on at_sj_id = le_sj_id where le_id = ?)\r\n" +
+				";";
 		conn = DBconnection.getConnection();
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 		pstmt.setInt(1, id);
 		pstmt.setInt(2, id);
+		pstmt.setInt(3, id);
+		pstmt.setInt(4, id);
 		ResultSet rs = pstmt.executeQuery();
 		while(rs.next()) {
 			HashMap<String,String> hs = new HashMap<>();

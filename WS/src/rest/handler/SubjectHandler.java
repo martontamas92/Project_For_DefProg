@@ -76,7 +76,7 @@ public class SubjectHandler {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XHTML_XML })
 	@Path("/demonstrator-subjectList") //
-	@JWTTokenNeeded
+	//@JWTTokenNeeded
 	// goes to demonstrator
 	public Response getSubjects(@QueryParam("id") Integer id) {
 		try {
@@ -133,7 +133,7 @@ public class SubjectHandler {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/student-attendedClasses")
-	 @JWTTokenNeeded
+	// @JWTTokenNeeded
 	// goes to student
 	public Response getAttendedSubjects(@QueryParam("id") Integer id) {
 		try {

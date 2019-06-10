@@ -71,8 +71,8 @@ public class LoginHandler {
 			@FormParam("status") String status) {
 
 		try {
-			UserName uname = UserName.userNameBuilder(username);
-			Password passwd = Password.passwordBuilder(password);
+//			UserName uname = UserName.userNameBuilder(username);
+//			Password passwd = Password.passwordBuilder(password);
 			System.out.println("status: " + status);
 			System.out.println("username: " + username);
 			System.out.println("passwd: " + password);
