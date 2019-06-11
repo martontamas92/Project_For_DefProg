@@ -83,7 +83,7 @@ public class DemonstratorHandler {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/create-subject")
-	// @JWTTokenNeeded
+	@JWTTokenNeeded
 	// goes to demonstrator
 	public Response subjectRegistrate(String data) {
 		System.out.println(data);
@@ -105,7 +105,7 @@ public class DemonstratorHandler {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XHTML_XML })
 	@Path("/subjectList") //
-	//@JWTTokenNeeded
+	@JWTTokenNeeded
 	// goes to demonstrator
 	public Response getSubjects(@QueryParam("id") Integer id) {
 		try {
@@ -113,7 +113,8 @@ public class DemonstratorHandler {
 			return Response.status(200).entity(subjectRepository.allSubjectByDeId(id)).build();
 
 		} catch (Exception e) {
-			return Response.status(500).entity(new Message("A szerver nem elérhetõ")).build();
+			e.printStackTrace();
+			return Response.status(500).entity(new Message("A szerver nem elérhetõ").toString()).build();
 		}
 
 	}
@@ -147,7 +148,7 @@ public class DemonstratorHandler {
 			Subject s = mapper.readValue(data, Subject.class);
 			Lecture l = new Lecture(LocalDate.now(), s);
 			int a = subjectRepository.createLecture(l);
-			String url = uri.getBaseUri().toString() + "subject/presence-list?le_id=" + a;
+			String url = uri.getBaseUri().toString() + "student/presence-list?le_id=" + a;
 			return Response.status(200).entity("\"" + url + "\"").build();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

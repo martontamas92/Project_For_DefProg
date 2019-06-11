@@ -64,13 +64,16 @@ public class SubjectController implements ISubject {
 		return false;
 	}
 
-	public Integer subjectIdByName(String subjectName)
+	public Integer subjectIdByName(String data)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-
-		String sql = "SELECT sj_id FROM subject_sj where sj_name = ?";
+		String subjectName = data.split(" - ")[1];
+		String subjectMajor = data.split(" - ")[0];
+		System.out.println(data);
+		String sql = "SELECT sj_id FROM subject_sj where sj_name = ? and sj_major = ?";
 		conn = DBconnection.getConnection();
 		PreparedStatement pstmt = conn.prepareStatement(sql);
 		pstmt.setString(1, subjectName);
+		pstmt.setString(2, subjectMajor);
 		ResultSet rs = pstmt.executeQuery();
 		rs.next();
 		return rs.getInt("sj_id");
@@ -101,8 +104,8 @@ public class SubjectController implements ISubject {
 		ResultSet rs = pstmt.executeQuery();
 		while (rs.next()) {
 			HashMap<String, String> hs = new HashMap<>();
-			hs.put("value", rs.getString("sj_name"));
-			hs.put("label", rs.getString("sj_name"));
+			hs.put("value", rs.getString("sj_major") + " - " + rs.getString("sj_name"));
+			hs.put("label", rs.getString("sj_major") + " - " + rs.getString("sj_name"));
 			resultList.add(hs);
 		}
 		return resultList;
@@ -162,7 +165,7 @@ public class SubjectController implements ISubject {
 
 		ArrayList<HashMap<String, String>> resultList = new ArrayList<>();
 
-		String sql = "select sj_id, CONCAT(de_fn, \" \", de_ln) as name, sj_name from demonstrator_de, subject_sj where sj_d_id = de_id and sj_id in(\r\n"
+		String sql = "select sj_id, CONCAT(de_fn, \" \", de_ln) as name, sj_major, sj_name from demonstrator_de, subject_sj where sj_d_id = de_id and sj_id in(\r\n"
 				+ "select sj_id from subject_sj where sj_id not in (\r\n"
 				+ "select at_sj_id from sj_st_attend_at where at_st_id=?\r\n" + ")\r\n" + ");";
 
@@ -176,9 +179,11 @@ public class SubjectController implements ISubject {
 			Integer sjId = rs.getInt("sj_id");
 			String deName = rs.getString("name");
 			String sjName = rs.getString("sj_name");
+			String sjMajor = rs.getString("sj_major");
 			hm.put("id", sjId.toString());
 			hm.put("name", deName);
 			hm.put("subjectName", sjName);
+			hm.put("subjectMajor", sjMajor);
 			resultList.add(hm);
 		}
 		return resultList;

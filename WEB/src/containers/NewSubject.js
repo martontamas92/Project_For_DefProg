@@ -87,7 +87,13 @@ export default class NewSubject extends Component {
           subjectMajor: this.state.subjectmajor,
           demonstrator: this.props.userStates.demonstrator
         },
-        { responseType: "json" }
+
+        { responseType: "json" },
+        {
+          headers: {
+            Authorization: "Bearer " + this.props.userStates.token
+          }
+        }
       ).then(response => {
         this.getSubjectList();
         console.log(response.data);
