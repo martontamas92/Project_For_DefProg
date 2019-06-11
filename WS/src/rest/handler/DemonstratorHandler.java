@@ -83,7 +83,7 @@ public class DemonstratorHandler {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/create-subject")
-	 @JWTTokenNeeded
+	// @JWTTokenNeeded
 	// goes to demonstrator
 	public Response subjectRegistrate(String data) {
 		System.out.println(data);
@@ -105,7 +105,7 @@ public class DemonstratorHandler {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XHTML_XML })
 	@Path("/subjectList") //
-	@JWTTokenNeeded
+	//@JWTTokenNeeded
 	// goes to demonstrator
 	public Response getSubjects(@QueryParam("id") Integer id) {
 		try {
@@ -121,7 +121,7 @@ public class DemonstratorHandler {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/classes")
-	@JWTTokenNeeded
+	//@JWTTokenNeeded
 	// goes to demonstrator
 	public Response pastClasses(@QueryParam("id") Integer id) {
 		try {
@@ -135,10 +135,31 @@ public class DemonstratorHandler {
 
 	}
 
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/create-lecture")
+	//@JWTTokenNeeded
+	// goes to demonstrator
+	public Response lecture(@Context UriInfo uri, String data) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			Subject s = mapper.readValue(data, Subject.class);
+			Lecture l = new Lecture(LocalDate.now(), s);
+			int a = subjectRepository.createLecture(l);
+			String url = uri.getBaseUri().toString() + "subject/presence-list?le_id=" + a;
+			return Response.status(200).entity("\"" + url + "\"").build();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			return Response.status(500).entity(new Message("A létrehozás nem sikerült").toString()).build();
+		}
+
+	}
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/absence-list")
-	@JWTTokenNeeded
+	//@JWTTokenNeeded
 	// goes to demonstrator
 	public Response absences(@QueryParam("id") Integer id) {
 		try {

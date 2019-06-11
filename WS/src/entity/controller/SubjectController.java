@@ -162,7 +162,7 @@ public class SubjectController implements ISubject {
 
 		ArrayList<HashMap<String, String>> resultList = new ArrayList<>();
 
-		String sql = "select sj_id, CONCAT(de_fn, \" \", de_mn, \" \", de_ln) as name, sj_name from demonstrator_de, subject_sj where sj_d_id = de_id and sj_id in(\r\n"
+		String sql = "select sj_id, CONCAT(de_fn, \" \", de_ln) as name, sj_name from demonstrator_de, subject_sj where sj_d_id = de_id and sj_id in(\r\n"
 				+ "select sj_id from subject_sj where sj_id not in (\r\n"
 				+ "select at_sj_id from sj_st_attend_at where at_st_id=?\r\n" + ")\r\n" + ");";
 

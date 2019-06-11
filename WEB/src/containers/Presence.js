@@ -52,7 +52,7 @@ export default class NewSubject extends Component {
   getSubjectList = () => {
     let { id } = this.state;
     id = this.props.userStates.demonstrator.id;
-    Axios.get("http://" + link + "/WS/home/subject/classes?id=" + id, {
+    Axios.get("http://" + link + "/WS/home/demonstrator/classes?id=" + id, {
       headers: {
         Authorization: "Bearer " + this.props.userStates.token
       }
@@ -84,7 +84,7 @@ export default class NewSubject extends Component {
       let id = this.state.selectedOption.value;
       console.log("Id:", id);
       const response = Axios.get(
-        "http://" + link + "/WS/home/subject/absence-list?id=" + id,
+        "http://" + link + "/WS/home/demonstrator/absence-list?id=" + id,
         //"http://demo7358603.mockable.io/login",
         { responseType: "json" }
       ).then(response => {

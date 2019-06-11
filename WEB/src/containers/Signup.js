@@ -54,7 +54,7 @@ export default class Signup extends Component {
     //const { email, password, middlename, firstname, lastname } = this.state;
     try {
       const response = Axios.post(
-        "http://" + link + "/WS/home/demonstrator/registrate",
+        "http://" + link + "/WS/home/demonstrator/registration",
         //"http://demo7358603.mockable.io/login",
         {
           Name: {

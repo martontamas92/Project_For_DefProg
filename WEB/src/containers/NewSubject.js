@@ -50,14 +50,11 @@ export default class NewSubject extends Component {
   getSubjectList = () => {
     let { id } = this.state;
     id = this.props.userStates.demonstrator.id;
-    Axios.get(
-      "http://" + link + "/WS/home/subject/demonstrator-subjectList?id=" + id,
-      {
-        headers: {
-          Authorization: "Bearer " + this.props.userStates.token
-        }
+    Axios.get("http://" + link + "/WS/home/demonstrator/subjectList?id=" + id, {
+      headers: {
+        Authorization: "Bearer " + this.props.userStates.token
       }
-    ).then(response => {
+    }).then(response => {
       this.setState({
         options: response.data
       });
@@ -83,7 +80,7 @@ export default class NewSubject extends Component {
     //const { email, password, middlename, firstname, lastname } = this.state;
     try {
       const response = Axios.post(
-        "http://" + link + "/WS/home/subject/registrate",
+        "http://" + link + "/WS/home/demonstrator/create-subject",
         //"http://demo7358603.mockable.io/login",
         {
           subjectName: this.state.subname,
@@ -110,15 +107,19 @@ export default class NewSubject extends Component {
   getQR = () => {
     const selectedFruit = this.selectedOption;
     Axios.post(
-      "http://" + link + "/WS/home/subject/create-lecture",
-      // "http://localhost:8080/WS/home/subject/create-lecture",
+      "http://" + link + "/WS/home/demonstrator/create-lecture",
+      // {
+      // headers: {
+      //   Authorization: "Bearer " + this.props.userStates.token
+      // }
+      // },
       {
         subjectName: this.state.selectedOption.value,
         demonstrator: {
-          id: this.state.id,
+          id: this.props.userStates.demonstrator.id,
           name: {
-            firstName: this.state.firstname,
-            lastName: this.state.lastname
+            firstName: this.props.userStates.demonstrator.name.firstName,
+            lastName: this.props.userStates.demonstrator.name.lastName
           }
         }
       },
