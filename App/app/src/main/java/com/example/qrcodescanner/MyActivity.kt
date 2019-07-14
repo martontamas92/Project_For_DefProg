@@ -6,8 +6,10 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import com.example.qrcodescanner.activities.LoginActivity
 import com.example.qrcodescanner.activities.RegisterActivity
 import com.example.qrcodescanner.models.User
+import kotlinx.android.synthetic.main.nav_header_main.*
 
 
 open class MyActivity : AppCompatActivity()
@@ -61,5 +63,21 @@ open class MyActivity : AppCompatActivity()
         val intent = Intent( this, RegisterActivity::class.java )
 
         startActivity( intent )
+    }
+
+    fun startLoginActivity()
+    {
+        val intent = Intent( this, LoginActivity::class.java )
+
+        startActivity( intent )
+    }
+
+    fun setUserDetails()
+    {
+        if( MyApplication.instance.isLoggedIn )
+        {
+            username.text    = MyApplication.instance.user.getName()
+            neptun_code.text = MyApplication.instance.user.neptun
+        }
     }
 }

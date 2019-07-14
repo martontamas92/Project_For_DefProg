@@ -167,18 +167,11 @@ class MainActivity : MyActivity(), NavigationView.OnNavigationItemSelectedListen
         startActivity( intent )
     }
 
-    private fun startLoginActivity()
-    {
-        val intent = Intent( this, LoginActivity::class.java )
-
-        startActivity( intent )
-    }
-
     override fun onActivityResult( requestCode: Int, resultCode: Int, data: Intent? )
     {
         super.onActivityResult( requestCode, resultCode, data )
 
-        val result  = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        val result  = IntentIntegrator.parseActivityResult( requestCode, resultCode, data )
         val link    = result.contents
 
         if( result == null )
@@ -190,17 +183,17 @@ class MainActivity : MyActivity(), NavigationView.OnNavigationItemSelectedListen
 
         if ( link == null )
         {
-            Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG ).show()
 
             return
         }
 
-        scanLink(link)
+        scanLink( link )
 
         Log.i( "scan_link", link )
     }
 
-    private fun scanLink(link:String )
+    private fun scanLink( link: String )
     {
         val urlString   = link + "&st_id=" + MyApplication.instance.user.id
 
@@ -231,10 +224,10 @@ class MainActivity : MyActivity(), NavigationView.OnNavigationItemSelectedListen
                 Toast.makeText( applicationContext, R.string.error_in_link, Toast.LENGTH_LONG ).show()
             }
 
-            override fun onResponse(call: Call, response: Response)
+            override fun onResponse( call: Call, response: Response )
             {
                 val jsonData = response.body()?.string()
-                val message  = Message(jsonData!!)
+                val message  = Message( jsonData!! )
                 Log.i( "response", jsonData )
 
                 if ( !response.isSuccessful )
@@ -265,15 +258,6 @@ class MainActivity : MyActivity(), NavigationView.OnNavigationItemSelectedListen
     {
         super.onResume()
         setMenuItemVisibility()
-        setUserDetails()
-    }
-
-    private fun setUserDetails()
-    {
-        if( MyApplication.instance.isLoggedIn )
-        {
-            username.text    = MyApplication.instance.user.getName()
-            neptun_code.text = MyApplication.instance.user.neptun
-        }
+        //setUserDetails()
     }
 }

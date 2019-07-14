@@ -9,6 +9,7 @@ class Subject
     var id: Int?         = null
     var name: String?    = null
     var teacher: String? = null
+    var major: String? = null
 
     constructor()
 
@@ -18,10 +19,14 @@ class Subject
         {
             val jsonObject  = JSONObject( result )
             this.id         = jsonObject.getInt( "id" )
-            this.name       = jsonObject.getString( "name" )
-            this.teacher    = jsonObject.getString( "teacher" )
+            this.name       = jsonObject.getString( "subjectName" )
+            this.teacher    = jsonObject.getString( "name" )
+            this.major      = jsonObject.getString( "subjectMajor" )
         }
-        catch ( e: Exception){}
+        catch ( e: Exception )
+        {
+            Log.e( "subject_model_error", e.message)
+        }
     }
 
     constructor( jsonObject: JSONObject )
@@ -31,6 +36,7 @@ class Subject
             this.id         = jsonObject.getInt( "id" )
             this.name       = jsonObject.getString( "subjectName" )
             this.teacher    = jsonObject.getString( "name" )
+            this.major    = jsonObject.getString( "subjectMajor" )
         }
         catch ( e: Exception)
         {
@@ -38,10 +44,11 @@ class Subject
         }
     }
 
-    constructor( id: Int, name: String, teacher: String )
+    constructor( id: Int, name: String, teacher: String, major: String )
     {
         this.id         = id
         this.name       = name
         this.teacher    = teacher
+        this.major      = major
     }
 }

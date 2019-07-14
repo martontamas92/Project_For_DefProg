@@ -17,7 +17,7 @@ class MyApplication : Application()
 
     companion object
     {
-        val URL                 = "http://192.168.0.185:8080/WS/home/"
+        val URL                 = "http://192.168.43.143:8080/WS/home/"
         val REGISTER            = "student/registration"
         val LOGIN               = "authentication/login"
         val SUBJECTSGETTER      = "student/subjectList"

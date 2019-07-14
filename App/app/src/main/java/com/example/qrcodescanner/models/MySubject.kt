@@ -12,16 +12,20 @@ class MySubject
 
     constructor()
 
-    constructor(jsonObject: JSONObject)
+    constructor( jsonObject: JSONObject )
     {
-        try {
+        try
+        {
             this.name           = jsonObject.getString( "subject_name" )
             this.totalPresence  = jsonObject.getInt( "all" )
             this.myPresence     = jsonObject.getInt( "attended" )
-        } catch ( e: Exception) {
-            Log.e( "my_subject_model_error", e.message)
+        }
+        catch ( e: Exception)
+        {
+            Log.e( "my_subject_model_error", e.message )
         }
     }
+
     constructor( name: String, totalPresence: Int, myPresence: Int )
     {
         this.name           = name

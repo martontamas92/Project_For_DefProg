@@ -183,6 +183,8 @@ class LoginActivity : MyActivity()
                 MyApplication.instance.isLoggedIn   = true
                 MyApplication.instance.bearerToken  = token
 
+                //setUserDetails()
+
                 Log.i( "response id",  MyApplication.instance.user.id.toString() )
                 Log.i( "response", token )
                 finish()

@@ -202,7 +202,8 @@ class RegisterActivity : MyActivity()
                 Log.i( "response", response.message() )
                 Log.i( "response", response.isSuccessful.toString() )
 
-                finish()
+                startLoginActivity()
+
                 runOnUiThread {
                     Toast.makeText( applicationContext, R.string.success, Toast.LENGTH_SHORT ).show()
 

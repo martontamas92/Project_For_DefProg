@@ -37,6 +37,7 @@ class SubjectAdapter( private val subjectList: ArrayList<Subject>, private val a
     override fun onBindViewHolder( holder: SubjectViewHolder, position: Int )
     {
         holder.name?.text    = subjectList[position].name
+        holder.major?.text   = subjectList[position].major
         holder.teacher?.text = subjectList[position].teacher
 
         holder.item.setOnClickListener {
